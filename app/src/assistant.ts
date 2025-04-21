@@ -1,16 +1,26 @@
-import { createAssistant, createSmartappDebugger } from '@salutejs/client';
+import {
+  createAssistant,
+  createSmartappDebugger,
+  CreateAssistantParams,
+} from '@salutejs/client';
 
-const initializeAssistant = () => {
-	const assistantParams = {
-		token: import.meta.env.VITE_SMARTAPP_TOKEN || '',  // Получаем токен из переменных окружения
-		initPhrase: 'запусти хабит трекер',
-		getState: () => {
-			// Здесь возвращаем нужное состояние
-			return {
-				// Здесь твое состояние или пустой объект
-			};
-		}
-	};
+const isDev = import.meta.env.MODE === 'development';
 
-	return createSmartappDebugger(assistantParams); // Отправляем параметры с getState
+export const initializeAssistant = () => {
+  const getState = () => {
+    return {};
+  };
+
+  if (isDev) {
+    return createSmartappDebugger({
+      token: import.meta.env.VITE_SMARTAPP_TOKEN || '',
+      initPhrase: 'запусти трекер',
+      getState,
+    });
+  } else {
+    const prodParams: CreateAssistantParams = {
+      getState,
+    };
+    return createAssistant(prodParams);
+  }
 };
