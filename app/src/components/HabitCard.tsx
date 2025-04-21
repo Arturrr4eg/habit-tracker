@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './HabitCard.module.scss';
 
-export type Habit = {
+export type Habit = { // Habibi card ahahaha
   title: string;
   duration: number; // в днях
   startTime: string; // формат 'HH:MM'
