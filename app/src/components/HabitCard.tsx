@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './HabitCard.module.scss';
 
 export type Habit = { // Habibi card ahahaha
@@ -13,14 +12,14 @@ export type Habit = { // Habibi card ahahaha
 };
 
 const HabitCard: React.FC<Habit> = ({
-  title,
+  title = "wiwiw",
   duration = 21,
   startTime = "19:30",
   endTime = "23:40",
-  progress,
+  progress = 50,
   goal = "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Qui esse amet asperiores voluptatum unde et, labore vel animi nam consectetur ipsam quidem itaque nostrum ab sapiente iste neque, nulla sequi.",
   icon = '🔥',
-  completedToday,
+  completedToday = 1,
 }) => {
   return (
     <div className={styles.card}>

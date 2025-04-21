@@ -1,4 +1,3 @@
-import React from 'react';
 import HabitCard, { Habit } from '../components/HabitCard';
 
 // Типизация пропсов для компонента Home
