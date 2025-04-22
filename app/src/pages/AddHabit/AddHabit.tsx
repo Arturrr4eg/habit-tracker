@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import styles from './AddHabbit.module.scss';
+import styles from './AddHabit.module.scss';
 import { Habit } from '../../components/HabitCard';
 
 const AddHabit = ({ onAdd }: { onAdd: (habit: Habit) => void }) => {
