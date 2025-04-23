@@ -15,7 +15,7 @@ import { Habit } from './components/HabitCard';
 const initializeAssistant = () => {
   const assistantParams = {
     token: import.meta.env.VITE_SMARTAPP_TOKEN || '',  // Получаем токен из переменных окружения
-    initPhrase: 'запусти хабит трекер',
+    initPhrase: 'запусти Трекер_Привычек',
     getState: () => {
       // Здесь возвращаем нужное состояние
       return {
@@ -57,14 +57,18 @@ const App = () => {
 		const assistant = initializeAssistant();
 		assistantRef.current = assistant;
 
+		// Обработчик событий от ассистента
 		assistant.on('data', (event) => {
 			if (event.type === 'smart_app_data' && event.smart_app_data?.type === 'ADD_HABIT') {
 				const newHabit = event.smart_app_data.payload;
 				console.log('Добавлена привычка голосом:', newHabit);
+
+				// Добавляем новую привычку в состояние
 				setHabits((prev) => [...prev, newHabit]);
 			}
 		});
 	}, []);
+
 
 
 	return (

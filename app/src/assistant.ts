@@ -15,6 +15,9 @@ export const initializeAssistant = () => {
       token: import.meta.env.VITE_SMARTAPP_TOKEN ?? '',
       initPhrase: 'запусти Трекер_Привычек',
       getState,
+			nativePanel:{
+				defaultText: "Поговори со мной братишка"
+			}
     });
   } else {
     return createAssistant({ getState });
