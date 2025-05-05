@@ -2,14 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import { createAssistant, createSmartappDebugger } from '@salutejs/client';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Home from './pages/Home';
-// Удаляем импорт страницы AddHabit, так как мы будем использовать компонент напрямую
-// import AddHabit from './pages/AddHabit/AddHabit';
-// Импортируем компонент AddHabit
-import AddHabitForm from './pages/AddHabit/AddHabitForm'; // Переименовал импорт, чтобы избежать путаницы
 import Stats from './pages/Stats';
 import './styles/App.scss';
 import { Habit } from './components/HabitCard';
-import Modal from './components/Modal/Modal'; // Будем использовать отдельный компонент для модального окна
+import Modal from './components/Modal/Modal';
+import AddHabitForm from './pages/AddHabit/AddHabitForm';
 
 
 const isDev = import.meta.env.MODE === 'development';
@@ -60,10 +57,17 @@ const App = () => {
 
   // Состояние для управления видимостью модального окна
   const [showAddHabitModal, setShowAddHabitModal] = useState(false);
+  // Новое состояние для хранения названия привычки от ассистента
+  const [initialHabitTitle, setInitialHabitTitle] = useState<string | undefined>(undefined);
 
   // Функции для открытия и закрытия модального окна
   const handleOpenModal = () => setShowAddHabitModal(true);
-  const handleCloseModal = () => setShowAddHabitModal(false);
+  const handleCloseModal = () => {
+    setShowAddHabitModal(false);
+    // Очищаем начальное название при закрытии модального окна
+    setInitialHabitTitle(undefined);
+  };
+
 
   // Обработчик добавления привычки, который также закрывает модальное окно
   const handleAddHabit = (newHabit: Habit) => {
@@ -80,14 +84,30 @@ const App = () => {
     // Обработчик событий от ассистента
     assistant.on('data', (event) => {
       if (event.type === 'smart_app_data' && event.smart_app_data?.type === 'ADD_HABIT') {
-        const newHabit = event.smart_app_data.payload;
-        console.log('Добавлена привычка голосом:', newHabit);
+        const newHabitPayload = event.smart_app_data.payload;
+        console.log('Добавлена привычка голосом:', newHabitPayload);
 
-        // Добавляем новую привычку в состояние
-        setHabits((prev) => [...prev, newHabit]);
+        // Проверяем, есть ли в payload название привычки
+        if (newHabitPayload && typeof newHabitPayload.title === 'string') {
+          // Устанавливаем начальное название в состояние
+          setInitialHabitTitle(newHabitPayload.title);
+        } else {
+            // Если названия нет, очищаем старое (если было)
+            setInitialHabitTitle(undefined);
+        }
+
+        // Открываем модальное окно
+        setShowAddHabitModal(true);
+
+        // ВАЖНО: Само добавление привычки теперь будет происходить через форму в модальном окне,
+        // а не напрямую из обработчика ассистента, чтобы пользователь мог дозаполнить поля.
       }
+      // Здесь могут быть другие обработчики голосовых команд
     });
-  }, []);
+
+    // Очистка при размонтировании компонента}
+
+  }, []); // Пустой массив зависимостей, чтобы эффект выполнился один раз при монтировании
 
 
 
@@ -99,9 +119,9 @@ const App = () => {
           <div className="navbar-links">
             <Link to="/" className="nav-link">Главная</Link>
             {/* Изменяем Link на div или button и добавляем onClick */}
-            <button type='button' className="nav-link" onClick={handleOpenModal} style={{ cursor: 'pointer' }}>
+            <div className="nav-link" onClick={handleOpenModal} style={{ cursor: 'pointer' }}>
               Добавить
-            </button>
+            </div>
             <Link to="/stats" className="nav-link">Статистика</Link>
           </div>
         </nav>
@@ -109,27 +129,18 @@ const App = () => {
         <main className="main-content">
           <Routes>
             <Route path="/" element={<Home habits={habits} />} />
-            {/* Удаляем маршрут /add */}
-            {/*
-            <Route
-              path="/add"
-              element={
-                <AddHabit
-                  onAdd={(habit) => {
-                    console.log('Новая привычка вручную:', habit);
-                    setHabits((prev) => [...prev, habit]);
-                  }}
-                />
-              }
-            />
-          */}
             <Route path="/stats" element={<Stats />} />
           </Routes>
 
           {/* Условное отображение модального окна */}
           {showAddHabitModal && (
             <Modal onClose={handleCloseModal}>
-              <AddHabitForm onAdd={handleAddHabit} onClose={handleCloseModal}/>
+              {/* Передаем начальное название в AddHabitForm */}
+              <AddHabitForm
+                onAdd={handleAddHabit}
+                onClose={handleCloseModal}
+                initialTitle={initialHabitTitle} // <-- Передаем сюда
+              />
             </Modal>
           )}
 
