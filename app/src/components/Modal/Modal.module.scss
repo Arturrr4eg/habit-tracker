@@ -1,34 +1,39 @@
-.overlay {
-  position: fixed; // Фиксированное положение, чтобы перекрывать весь экран
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6); // Полупрозрачный темный фон
-  display: flex; // Используем flexbox для центрирования
-  justify-content: center; // Центрирование по горизонтали
-  align-items: center; // Центрирование по вертикали
-  z-index: 1000; // Высокий z-index, чтобы быть поверх остального контента
+.modalOverlay {
+	position: fixed; // Фиксированное позиционирование, чтобы перекрывать все
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.6); // Полупрозрачный черный фон
+	display: flex;
+	justify-content: center; // Центрирование по горизонтали
+	align-items: center; // Центрирование по вертикали
+	z-index: 1000; // Убедимся, что модальное окно поверх всего остального
+	padding: 20px; // Добавим отступ для маленьких экранов
 }
 
 .modalContent {
-  background-color: #fff; // Белый фон содержимого модалки
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  max-width: 90%; // Максимальная ширина
-  max-height: 90%; // Максимальная высота
-  overflow-y: auto; // Прокрутка, если содержимое не помещается
-  position: relative; // Для позиционирования кнопки закрытия, если она есть
+	background: #fff;
+	padding: 20px;
+	border-radius: 16px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	position: relative; // Для позиционирования кнопки закрытия
+	max-width: 500px; // Ограничиваем максимальную ширину
+	width: 100%; // Занимаем всю доступную ширину до max-width
+	max-height: 90vh; // Ограничиваем максимальную высоту
+	overflow-y: auto; // Добавляем прокрутку, если содержимое не помещается
 }
 
-// Опциональные стили для кнопки закрытия
 .closeButton {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	background: none;
+	border: none;
+	font-size: 24px;
+	cursor: pointer;
+	color: #aaa;
+	&:hover {
+		color: #777;
+	}
 }

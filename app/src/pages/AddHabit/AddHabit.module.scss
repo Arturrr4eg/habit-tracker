@@ -1,45 +1,45 @@
 .form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  background: #fff;
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  font-family: sans-serif;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	background: #fff;
+	padding: 20px;
+	border-radius: 16px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+	font-family: sans-serif;
 }
 
 h2 {
-  margin-bottom: 12px;
+	margin-bottom: 12px;
 }
 
 label {
-  display: flex;
-  flex-direction: column;
-  font-size: 14px;
-  color: #333;
+	display: flex;
+	flex-direction: column;
+	font-size: 14px;
+	color: #333;
 }
 
 input {
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  margin-top: 4px;
-  font-size: 14px;
+	padding: 8px;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	margin-top: 4px;
+	font-size: 14px;
 }
 
 button {
-  padding: 10px 16px;
-  background: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  cursor: pointer;
-  align-self: flex-start;
-  transition: backgrouand 0.3s ease;
+	padding: 10px 16px;
+	background: #4caf50;
+	color: white;
+	border: none;
+	border-radius: 8px;
+	font-size: 14px;
+	cursor: pointer;
+	align-self: flex-start;
+	transition: backgrouand 0.3s ease;
 }
 
 button:hover {
-  background: #43a047;
+	background: #43a047;
 }
