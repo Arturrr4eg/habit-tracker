@@ -1,0 +1,34 @@
+.overlay {
+  position: fixed; // Фиксированное положение, чтобы перекрывать весь экран
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6); // Полупрозрачный темный фон
+  display: flex; // Используем flexbox для центрирования
+  justify-content: center; // Центрирование по горизонтали
+  align-items: center; // Центрирование по вертикали
+  z-index: 1000; // Высокий z-index, чтобы быть поверх остального контента
+}
+
+.modalContent {
+  background-color: #fff; // Белый фон содержимого модалки
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  max-width: 90%; // Максимальная ширина
+  max-height: 90%; // Максимальная высота
+  overflow-y: auto; // Прокрутка, если содержимое не помещается
+  position: relative; // Для позиционирования кнопки закрытия, если она есть
+}
+
+// Опциональные стили для кнопки закрытия
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}

@@ -12,21 +12,26 @@ import { Habit } from './components/HabitCard';
 
 
 
+const isDev = import.meta.env.MODE === 'development';
+
 const initializeAssistant = () => {
-  const assistantParams = {
-    token: import.meta.env.VITE_SMARTAPP_TOKEN || '',  // Получаем токен из переменных окружения
-    initPhrase: 'запусти Трекер_Привычек',
-    getState: () => {
-      // Здесь возвращаем нужное состояние
-      return {
-        // Здесь твое состояние или пустой объект
-      };
-    }
+  const getState = () => {
+    return {}; // здесь можно потом вставить state, если нужно
   };
 
-  return createSmartappDebugger(assistantParams); // Отправляем параметры с getState
+  if (isDev) {
+    return createSmartappDebugger({
+      token: import.meta.env.VITE_SMARTAPP_TOKEN ?? '',
+      initPhrase: 'запусти Трекер Привычек',
+      getState,
+			nativePanel:{
+				defaultText: "Поговори со мной братишка"
+			}
+    });
+  } else {
+    return createAssistant({ getState });
+  }
 };
-
 
 const App = () => {
 	const assistantRef = useRef<ReturnType<typeof createAssistant>>();
