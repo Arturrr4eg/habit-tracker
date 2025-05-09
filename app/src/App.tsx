@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { createAssistant, createSmartappDebugger } from '@salutejs/client';
+import { createAssistant, createSmartappDebugger, AssistantAppState } from '@salutejs/client';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Home from './pages/Home';
 import Stats from './pages/Stats';
@@ -11,23 +11,23 @@ import AddHabitForm from './pages/AddHabit/AddHabitForm';
 
 const isDev = import.meta.env.MODE === 'development';
 
-const initializeAssistant = () => {
-  const getState = () => {
-    return {}; // здесь можно потом вставить state, если нужно
-  };
 
+
+const initializeAssistant = (getState: () => AssistantAppState
+  ) => {
   if (isDev) {
     return createSmartappDebugger({
       token: import.meta.env.VITE_SMARTAPP_TOKEN ?? '',
       initPhrase: 'запусти Трекер Привычек',
       getState,
       nativePanel:{
-        defaultText: "Поговори со мной братишка"
+        defaultText: "Поговори со мной братишка",
+			screenshotMode: false,
+			tabIndex: -1,
       }
     });
-  } else {
-    return createAssistant({ getState });
   }
+    return createAssistant({ getState });
 };
 
 const App = () => {
@@ -55,10 +55,33 @@ const App = () => {
     },
   ]);
 
+
+
   // Состояние для управления видимостью модального окна
   const [showAddHabitModal, setShowAddHabitModal] = useState(false);
   // Новое состояние для хранения названия привычки от ассистента
   const [initialHabitTitle, setInitialHabitTitle] = useState<string | undefined>(undefined);
+
+
+
+const handleDeleteHabit = (indexToDelete: number) => {
+      console.log('Attempting to delete habit at index:', indexToDelete);
+      // Проверяем, что индекс корректен
+      if (indexToDelete >= 0 && indexToDelete < habits.length) {
+          setHabits(prevHabits => {
+              // Создаем новый массив привычек, исключая привычку по указанному индексу
+              const newHabits = prevHabits.filter((_, index) => index !== indexToDelete);
+              console.log('New habits list after deletion:', newHabits);
+              return newHabits;
+          });
+      } else {
+          console.warn('Invalid index for deletion:', indexToDelete);
+          // Можно добавить обратную связь пользователю, если индекс некорректен
+      }
+  };
+
+
+
 
   // Функции для открытия и закрытия модального окна
   const handleOpenModal = () => setShowAddHabitModal(true);
@@ -77,38 +100,43 @@ const App = () => {
   };
 
 
-  useEffect(() => {
-    const assistant = initializeAssistant();
+   useEffect(() => {
+    const assistant = initializeAssistant(() => {
+        // ... ваша функция getStateForAssistant, возможно пустая если не нужна
+        return {};
+    });
     assistantRef.current = assistant;
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+    assistant.on('data', (event: any) => { // Теперь event может содержать event.action
+      console.log('assistant.on(data)', event);
 
-    // Обработчик событий от ассистента
-    assistant.on('data', (event) => {
-      if (event.type === 'smart_app_data' && event.smart_app_data?.type === 'add_habit') {
-        const newHabitPayload = event.smart_app_data.payload.title;
-        console.log('Добавлена привычка голосом:', newHabitPayload);
+      // *** Вот тут ключевое изменение: проверяем event.action ***
+      if (event.action) {
+        console.log('Assistant action received:', event.action);
 
-        // Проверяем, есть ли в payload название привычки
-        if (newHabitPayload && typeof newHabitPayload.title === 'string') {
+        // Проверяем, что тип действия 'add_habit' и есть поле title
+        if (event.action.type === 'add_habit' && typeof event.action.title === 'string') {
+          const habitTitleFromAssistant = event.action.title;
+          console.log('Название привычки от ассистента:', habitTitleFromAssistant);
+
           // Устанавливаем начальное название в состояние
-          setInitialHabitTitle(newHabitPayload.title);
-        } else {
-            // Если названия нет, очищаем старое (если было)
-            setInitialHabitTitle(undefined);
+          setInitialHabitTitle(habitTitleFromAssistant);
+
+          // Открываем модальное окно
+          setShowAddHabitModal(true);
         }
-
-        // Открываем модальное окно
-        setShowAddHabitModal(true);
-
-        // ВАЖНО: Само добавление привычки теперь будет происходить через форму в модальном окне,
-        // а не напрямую из обработчика ассистента, чтобы пользователь мог дозаполнить поля.
+        // Добавьте здесь другие else if для обработки других action.type, если они будут
       }
-      // Здесь могут быть другие обработчики голосовых команд
+      // ... обработка других типов событий, если нужно
     });
 
-    // Очистка при размонтировании компонента}
+    // ... остальные обработчики assistant.on
 
-  }, []); // Пустой массив зависимостей, чтобы эффект выполнился один раз при монтировании
+    return () => {
+        // Функция очистки при размонтировании
+    };
 
+  }, []);
 
 
   return (
@@ -128,7 +156,7 @@ const App = () => {
 
         <main className="main-content">
           <Routes>
-            <Route path="/" element={<Home habits={habits} />} />
+            <Route path="/" element={<Home habits={habits}  onDeleteHabit={handleDeleteHabit}/>} />
             <Route path="/stats" element={<Stats />} />
           </Routes>
 

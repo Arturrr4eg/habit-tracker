@@ -18,10 +18,13 @@ body {
   color: #333;
 }
 .assistant-response {
-  color: #000; /* Сделать текст черным */
+  color: #2c427e; /* Сделать текст черным */
   background-color: #fff; /* Сделать фон белым */
 }
 body {
-	background-color: black;
+  background: linear-gradient(to bottom right, #A8E6CF, #4BB34B);
+  /* Дополнительные стили */
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
 }
-
