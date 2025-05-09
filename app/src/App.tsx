@@ -83,8 +83,8 @@ const App = () => {
 
     // Обработчик событий от ассистента
     assistant.on('data', (event) => {
-      if (event.type === 'smart_app_data' && event.smart_app_data?.type === 'ADD_HABIT') {
-        const newHabitPayload = event.smart_app_data.payload;
+      if (event.type === 'smart_app_data' && event.smart_app_data?.type === 'add_habit') {
+        const newHabitPayload = event.smart_app_data.payload.title;
         console.log('Добавлена привычка голосом:', newHabitPayload);
 
         // Проверяем, есть ли в payload название привычки
