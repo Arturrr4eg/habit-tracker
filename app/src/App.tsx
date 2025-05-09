@@ -136,7 +136,7 @@ const handleDeleteHabit = (indexToDelete: number) => {
         // Функция очистки при размонтировании
     };
 
-  }, []);
+  }, [habits]);
 
 
   return (
