@@ -10,7 +10,7 @@ import AddHabitForm from './pages/AddHabit/AddHabitForm';
 
 interface DeleteHabitAction {
   type: 'delete_habit';
-  id: number; // Номер привычки (1-based)
+  id: string; // Номер привычки (1-based)
 }
 
 
@@ -141,48 +141,47 @@ const handleDeleteHabit = (idToDelete: string) => {
           // Открываем модальное окно
           setShowAddHabitModal(true);
         }
-				else if (event.action.type === 'delete_habit') {
-             // Проверяем, что поле number существует и является числом больше 0
-             if ('number' in event.action && typeof event.action.number === 'number' && event.action.number > 0) {
-                 const deleteAction = event.action as DeleteHabitAction;
-                 const habitNumberToDelete = deleteAction.id; // Номер привычки (1-based)
+				 else if (event.action.type === 'delete_habit') {
+             // Проверяем, что поле id существует и является непустой строкой
+             // Тип HandledActions уже подсказывает TypeScript, что у delete_habit есть id
+             const deleteAction = event.action as DeleteHabitAction; // Приводим к типу удаления
 
-                 console.log('Received delete_habit action for number:', habitNumberToDelete);
+             // *** Проверяем наличие и тип поля id ***
+             if (typeof deleteAction.id === 'string' && deleteAction.id) {
+                 const habitIdToDelete = deleteAction.id; // Получаем ID напрямую из action
 
-                 // *** НАХОДИМ ПРИВЫЧКУ ПО НОМЕРУ (индексу) И УДАЛЯЕМ ПО ЕЕ ID ***
-                 // Номер привычки от ассистента соответствует индексу в массиве минус 1.
-                 const indexToDelete = habitNumberToDelete - 1;
+                 console.log('Received delete_habit action for ID:', habitIdToDelete);
 
-                 // Проверяем, что вычисленный индекс существует в текущем массиве привычек
-                 if (indexToDelete >= 0 && indexToDelete < habits.length) {
-                     // Получаем объект привычки по индексу
-                     const habitToDelete = habits[indexToDelete];
-                     // Вызываем функцию удаления, передавая уникальный ID этой привычки
-                     handleDeleteHabit(habitToDelete.id);
-                     console.log(`Deleted habit number ${habitNumberToDelete} with ID: ${habitToDelete.id}`);
-                 } else {
-                     console.warn('Received delete_habit action with invalid or out-of-range number:', habitNumberToDelete);
-                     // Возможно, отправить голосовой ответ пользователю: "Извините, привычки с номером {habitNumberToDelete} нет."
-                     // assistantRef.current?.sendData({ type: 'tts', value: `Извините, привычки с номером ${habitNumberToDelete} нет.` });
-                 }
-        // Добавьте здесь другие else if для обработки других action.type, если они будут
-      } else {
-                 console.warn('Received delete_habit action without a valid number:', event.action);
-                 // Возможно, отправить голосовой ответ пользователю: "Извините, я не понял номер привычки, которую нужно удалить."
+                 // *** ВЫЗЫВАЕМ handle delete habit НАПРЯМУЮ С ПОЛУЧЕННЫМ ID ***
+                 // Логика поиска по номеру и индексу больше не нужна, так как бэкенд прислал ID
+                 handleDeleteHabit(habitIdToDelete);
+                 console.log(`Requested deletion for habit with ID: ${habitIdToDelete}`);
+
+             } else {
+                 // Если поле id отсутствует или некорректно пришло от бэкенда
+                 console.warn('Received delete_habit action without a valid ID:', event.action);
+                 // Возможно, отправить голосовой ответ пользователю: "Извините, я не получил идентификатор привычки, которую нужно удалить."
+                 // assistantRef.current?.sendData({ type: 'tts', value: "Извините, не удалось определить, какую привычку удалить." });
              }
         }
+        // --- КОНЕЦ ИСПРАВЛЕННОЙ Обработки действия удаления привычки по ID ---
+
         // Здесь можно добавить обработку других типов action
       }
       // Здесь можно обрабатывать другие типы событий data, не связанные с action
     });
 
-    // ... остальные обработчики assistant.on
+    // ... (обработчики theme, start, command, error, tts)
 
     return () => {
         // Функция очистки при размонтировании
     };
-
-  }, [habits]);
+    // Зависимости: теперь не нужно добавлять habits, так как мы не обращаемся к массиву habits
+    // внутри обработчика delete_habit для поиска по индексу.
+    // Однако, если getStateForAssistant использует habits, то habits должен остаться в зависимостях.
+    // Допустим, что getStateForAssistant может использовать habits для item_selector,
+    // поэтому оставляем habits в зависимостях.
+  }, [habits]); // Оставляем habits в зависимостях, если getStateForAssistant его использует
 
 
   return (
