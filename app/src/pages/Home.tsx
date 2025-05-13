@@ -3,7 +3,7 @@ import HabitCard, { Habit } from '../components/HabitCard';
 // Типизация пропсов для компонента Home
 type HomeProps = {
   habits: Habit[];
-	onDeleteHabit: (index: number) => void;
+	onDeleteHabit: (id: string) => void;
 
 };
 
@@ -26,11 +26,11 @@ const Home: React.FC<HomeProps> = ({ habits, onDeleteHabit }) => { // Получ
               <span className="habit-number">{index + 1}.</span>
 
               {/* Отрисовываем карточку привычки, передавая все свойства habit */}
-              <HabitCard {...habit} />
+              <HabitCard {...(habit as Omit<Habit, "id">)} />
 
               {/* Кнопка для удаления привычки */}
               <button
-                onClick={() => onDeleteHabit(index)} // При клике вызываем onDeleteHabit с текущим индексом
+                onClick={() => onDeleteHabit(habit.id)} // При клике вызываем onDeleteHabit с текущим индексом
                 className="delete-button" // Класс для стилизации кнопки
                 aria-label={`Удалить привычку ${index + 1}: ${habit.title}`} // Атрибут для доступности
               >

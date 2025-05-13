@@ -4,10 +4,11 @@ import { Habit } from '../../components/HabitCard';
 
 // Добавляем initialTitle в тип пропсов, делаем его необязательным
 type AddHabitFormProps = {
-  onAdd: (habit: Habit) => void;
+  onAdd: (habitData: HabitFormData) => void;
   onClose: () => void;
   initialTitle?: string; // <-- Добавляем сюда, делаем необязательным с помощью '?'
 }
+type HabitFormData = Omit<Habit, 'id' | 'completedToday'>;
 
 const AddHabitForm: React.FC<AddHabitFormProps> = ({ onAdd, initialTitle }) => {
   // Используем initialTitle для установки начального значения

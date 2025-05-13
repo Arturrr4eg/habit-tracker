@@ -1,6 +1,7 @@
 import styles from './HabitCard.module.scss';
 
 export type Habit = { // Habibi card ahahaha
+	id: string;
   title: string;
   duration: number; // в днях
   startTime: string; // формат 'HH:MM'
@@ -11,7 +12,7 @@ export type Habit = { // Habibi card ahahaha
   completedToday: boolean;
 };
 
-const HabitCard: React.FC<Habit> = ({
+const HabitCard: React.FC<Omit<Habit, "id">> = ({
   title = "wiwiw",
   duration = 21,
   startTime = "19:30",
@@ -19,7 +20,7 @@ const HabitCard: React.FC<Habit> = ({
   progress = 50,
   goal = "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Qui esse amet asperiores voluptatum unde et, labore vel animi nam consectetur ipsam quidem itaque nostrum ab sapiente iste neque, nulla sequi.",
   icon = '🔥',
-  completedToday = 1,
+  completedToday = false,
 }) => {
   return (
     <div className={styles.card}>
