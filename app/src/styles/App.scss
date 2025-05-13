@@ -1,30 +1,152 @@
-// src/styles/App.scss
+
+
+/* ./styles/App.scss - Адаптивная версия */
+
+// Основные цвета Сбера (примерные)
+$sber-green-dark: #388E3C;
+$sber-green-primary: #4BB34B;
+$sber-green-light: #8BC34A;
+$sber-blue-green: #A8E6CF;
+$sber-white: #FFFFFF;
+$sber-light-grey: #EEEEEE;
+$sber-dark-grey: #333333;
+
+// Определение контрольных точек (брейкпоинтов) для медиазапросов (примерные)
+$breakpoint-tablet: 768px;
+$breakpoint-mobile: 480px;
+
 
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #f5f5f5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  background: linear-gradient(to bottom right, $sber-blue-green, $sber-green-primary);
+
+  color: $sber-dark-grey;
+
+  // Адаптация базового размера шрифта для меньших экранов (используем rem)
+  font-size: 16px; // Базовый размер для rem
+  @media (max-width: $breakpoint-tablet) {
+      font-size: 15px;
+  }
+  @media (max-width: $breakpoint-mobile) {
+      font-size: 14px;
+  }
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
 }
 
-.title {
-  font-size: 2rem;
-  color: #333;
-}
-.assistant-response {
-  color: #2c427e; /* Сделать текст черным */
-  background-color: #fff; /* Сделать фон белым */
-}
-body {
-  background: linear-gradient(to bottom right, #A8E6CF, #4BB34B);
-  /* Дополнительные стили */
+.app-container {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
+}
+
+.navbar {
+  background-color: $sber-green-dark;
+  color: $sber-white;
+  padding: 10px 20px; // Используем px, но можно адаптировать в медиазапросах
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  flex-wrap: wrap; // Позволяет элементам навбара переноситься на новую строку на узких экранах
+}
+
+.navbar-title {
   margin: 0;
-  padding: 0;
+  font-size: 1.5em; // em масштабируется относительно родителя (navbar) или базового размера body
+  font-weight: bold;
+
+  @media (max-width: $breakpoint-mobile) {
+      font-size: 1.3em; // Уменьшаем размер на мобильных
+      width: 100%; // Занимает всю ширину на узких экранах
+      text-align: center;
+      margin-bottom: 10px; // Отступ от заголовка до ссылок на мобильных
+  }
+}
+
+.navbar-links {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap; // Позволяет ссылкам переноситься
+  justify-content: center; // Центрируем ссылки, если они перенеслись
+
+  @media (max-width: $breakpoint-mobile) {
+      width: 100%; // Занимает всю ширину на мобильных
+      gap: 10px; // Уменьшаем расстояние между ссылками
+  }
+}
+
+.nav-link {
+  color: $sber-white;
+  text-decoration: none;
+  font-size: 1.1em; // em масштабируется относительно родителя (.navbar-links) или базового размера body
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: $sber-light-grey;
+  }
+
+  &.nav-link {
+      background: none;
+      border: none;
+      padding: 0;
+      font: inherit;
+      cursor: pointer;
+      outline: inherit;
+  }
+}
+
+
+.main-content {
+
+  flex-grow: 1;
+  padding: 20px;
+	padding-bottom: 135px;// Базовый отступ, можно адаптировать
+  @media (max-width: $breakpoint-tablet) {
+      padding: 15px;
+			padding-bottom: 70px;
+  }
+    @media (max-width: $breakpoint-mobile) {
+      padding: 10px;
+  }
+
+  // padding-bottom будет добавлен инлайн-стилем
+  display: flex;
+  flex-direction: column;
+
+
+  > button { /* Стиль для кнопки "Добавить привычку" */
+      margin-bottom: 20px;
+      background-color: $sber-green-primary;
+      color: $sber-white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background-color 0.3s ease, opacity 0.3s ease;
+
+      @media (max-width: $breakpoint-mobile) {
+         width: 100%; // Кнопка на всю ширину на мобильных
+         padding: 12px 20px; // Немного увеличиваем padding
+      }
+
+      &:hover {
+          background-color: darken($sber-green-primary, 10%);
+      }
+      &:active {
+          opacity: 0.8;
+      }
+  }
 }

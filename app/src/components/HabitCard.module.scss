@@ -1,35 +1,65 @@
+/* ./components/HabitCard.module.scss - Скорректировано */
+
+// Импортируем цвета и брейкпоинты
+@import '../styles/App.scss';
+
+
 .card {
-  background: #926464;
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 16px;
-  font-family: sans-serif;
+  background-color: $sber-white;
+  padding: 15px;
+   @media (max-width: $breakpoint-mobile) {
+        padding: 10px;
+    }
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+	margin-bottom: 20px;// *** ОБЯЗАТЕЛЬНО: Нужно для абсолютного позиционирования дочерних элементов ***
 }
 
 .header {
   display: flex;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  // Адаптация на мобильных
+  @media (max-width: $breakpoint-mobile) {
+      flex-direction: column;
+      align-items: flex-start;
+  }
 }
 
 .icon {
-  font-size: 24px;
-  margin-right: 8px;
+  font-size: 1.8em;
+  margin-right: 10px;
+  @media (max-width: $breakpoint-mobile) {
+      font-size: 1.5em;
+      margin-right: 0;
+      margin-bottom: 5px;
+  }
 }
 
 .title {
-  font-size: 18px;
-  font-weight: bold;
+  margin: 0;
+  font-size: 1.3em;
+  color: $sber-dark-grey;
+  flex-grow: 1;
+  @media (max-width: $breakpoint-mobile) {
+      font-size: 1.1em;
+  }
 }
 
 .meta {
-  font-size: 14px;
+  font-size: 0.9em;
   color: #666;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 
-  & > div {
-    margin-bottom: 4px;
+  div {
+    margin-bottom: 5px;
+  }
+  @media (max-width: $breakpoint-mobile) {
+      font-size: 0.8em;
   }
 }
 
@@ -43,30 +73,62 @@
 
 .progress {
   height: 100%;
-  background: #4caf50;
+  background: linear-gradient(to right, #8BC34A, #4BB34B); // Пример зеленого градиента
   transition: width 0.3s ease;
 }
 
 .progressText {
-  font-size: 12px;
+  font-size: 0.8em;
+  text-align: right;
   color: #444;
   margin-bottom: 8px;
 }
 
 .status {
-  font-size: 14px;
+  font-size: 0.9em;
   font-weight: 600;
   padding: 4px 8px;
   border-radius: 8px;
-  display: inline-block;
+  display: inline-block; // Чтобы padding применялся корректно
 }
 
 .done {
   color: #fff;
-  background: #4caf50;
+  background: #4caf50; // Пример зеленого для выполнено
 }
 
 .missed {
   color: #fff;
-  background: #f44336;
+  background: #f44336; // Пример красного для не выполнено
 }
+
+// *** НОВЫЕ СТИЛИ ДЛЯ КНОПКИ УДАЛЕНИЯ (КРЕСТИК) ***
+.deleteButton {
+  position: absolute; // Позиционируем абсолютно внутри .card
+  top: 10px; // Отступ сверху от края карточки
+  right: 10px; // Отступ справа от края карточки
+  background: none; // Без фонового цвета
+  border: none; // Без рамки
+  color: #B0B0B0; // Серый цвет крестика (можно изменить)
+  font-size: 1.5em; // Размер крестика (можно адаптировать)
+  cursor: pointer; // Курсор в виде указателя
+  padding: 0; // Убираем внутренние отступы кнопки
+  line-height: 1; // Обеспечиваем правильное выравнивание символа крестика
+  transition: color 0.2s ease, transform 0.2s ease; // Плавное изменение цвета и масштаба
+
+  &:hover {
+    color: #E57373; // Цвет при наведении (светло-красный)
+    transform: scale(1.1); // Немного увеличиваем при наведении
+  }
+  &:active {
+    opacity: 0.7; // Прозрачность при клике
+  }
+
+  // Адаптация позиции/размера на мобильных, если нужно
+  @media (max-width: $breakpoint-mobile) {
+      top: 5px;
+      right: 5px;
+      font-size: 1.2em;
+  }
+}
+// *** КОНЕЦ НОВЫХ СТИЛЕЙ ***

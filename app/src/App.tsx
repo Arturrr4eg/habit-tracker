@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createAssistant, createSmartappDebugger, AssistantAppState } from '@salutejs/client';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import Home from './pages/Home';
+import Home from './pages/Home/Home';
 import Stats from './pages/Stats';
 import './styles/App.scss';
 import { Habit } from './components/HabitCard';

@@ -1,4 +1,4 @@
-import HabitCard, { Habit } from '../components/HabitCard';
+import HabitCard, { Habit } from '../../components/HabitCard';
 
 // Типизация пропсов для компонента Home
 type HomeProps = {
@@ -18,24 +18,14 @@ const Home: React.FC<HomeProps> = ({ habits, onDeleteHabit }) => { // Получ
       ) : (
         // Список привычек, если они есть
         <div className="habits-list"> {/* Обертка для списка */}
-          {habits.map((habit, index) => (
+          {habits.map((habit) => (
             // Обертка для номера, карточки и кнопки удаления
             // Используем index как key, так как порядок важен и меняется при удалении
-            <div key={index} className="habit-item">
-              {/* Выводим порядковый номер привычки (index начинается с 0, поэтому +1) */}
-              <span className="habit-number">{index + 1}.</span>
-
-              {/* Отрисовываем карточку привычки, передавая все свойства habit */}
-              <HabitCard {...(habit as Omit<Habit, "id">)} />
-
-              {/* Кнопка для удаления привычки */}
-              <button
-                onClick={() => onDeleteHabit(habit.id)} // При клике вызываем onDeleteHabit с текущим индексом
-                className="delete-button" // Класс для стилизации кнопки
-                aria-label={`Удалить привычку ${index + 1}: ${habit.title}`} // Атрибут для доступности
-              >
-                Удалить
-              </button>
+            <div key={habit.id} className="habit-list-item-wrapper">
+              <HabitCard
+                 {...habit} // Передаем все поля habit, включая id
+                 onDeleteHabit={onDeleteHabit} // Передаем функцию удаления
+              />
             </div>
           ))}
         </div>

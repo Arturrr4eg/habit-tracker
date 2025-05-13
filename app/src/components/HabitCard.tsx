@@ -11,8 +11,13 @@ export type Habit = { // Habibi card ahahaha
   icon?: string; // Emoji или SVG путь
   completedToday: boolean;
 };
+type HabitCardProps = Habit & {
+    onDeleteHabit: (id: string) => void; // Функция для удаления
+};
 
-const HabitCard: React.FC<Omit<Habit, "id">> = ({
+const HabitCard: React.FC<HabitCardProps> = ({
+	id,
+	onDeleteHabit,
   title = "wiwiw",
   duration = 21,
   startTime = "19:30",
@@ -23,7 +28,18 @@ const HabitCard: React.FC<Omit<Habit, "id">> = ({
   completedToday = false,
 }) => {
   return (
+
     <div className={styles.card}>
+      {/* *** КНОПКА УДАЛЕНИЯ ВНУТРИ КАРТОЧКИ *** */}
+      <button
+        onClick={() => onDeleteHabit(id)} // Вызываем onDeleteHabit с id этой привычки
+        className={styles.deleteButton} // Класс для стилизации (определим в SCSS)
+        aria-label={`Удалить привычку: ${title}`} // Доступное описание кнопки
+      >
+        &times; {/* Символ крестика */}
+      </button>
+      {/* *** КОНЕЦ КНОПКИ УДАЛЕНИЯ *** */}
+
       <div className={styles.header}>
         <span className={styles.icon}>{icon}</span>
         <h3 className={styles.title}>{title}</h3>

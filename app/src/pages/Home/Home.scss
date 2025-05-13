@@ -1,0 +1,20 @@
+/* ./pages/Home.scss */
+
+.habits-list {
+  display: flex;
+  flex-direction: column;
+// Убедитесь, что здесь есть gap
+  // Возможно, уберите любые margin-bottom, если они были здесь ранее
+}
+
+// *** Проверьте стиль для обертки карточки (.habit-item или habit-list-item-wrapper) ***
+// Убедитесь, что у нее нет отрицательных margin или лишних padding/border
+.habit-item,
+.habit-list-item-wrapper {
+    margin-bottom: 20px; // *** Добавьте нижний отступ ***
+
+    // Опционально: убираем нижний отступ у последнего элемента
+    &:last-child {
+        margin-bottom: 0;
+	}
+}
