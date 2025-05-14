@@ -8,7 +8,7 @@ type AddHabitFormProps = {
   onClose: () => void;
   initialTitle?: string; // <-- Добавляем сюда, делаем необязательным с помощью '?'
 }
-type HabitFormData = Omit<Habit, 'id' | 'completedToday'>;
+type HabitFormData = Omit<Habit, 'id' | 'completedToday' | 'lastCompletedDate'>;
 
 const AddHabitForm: React.FC<AddHabitFormProps> = ({ onAdd, initialTitle }) => {
   // Используем initialTitle для установки начального значения
@@ -41,17 +41,19 @@ const AddHabitForm: React.FC<AddHabitFormProps> = ({ onAdd, initialTitle }) => {
       return;
     }
 
-    const newHabit = {
-      title: title.trim(), // Убираем лишние пробелы
+    const newHabitData: HabitFormData = { // <-- Указываем тип HabitFormData
+      title: title.trim(),
       goal,
       duration,
       startTime,
       endTime,
-      progress: 0,
+      progress: 0, // Прогресс при создании всегда 0
       icon,
-      completedToday: false,
+      // completedToday и lastCompletedDate не добавляем здесь
     };
-    onAdd(newHabit);
+
+    // *** Передаем объект HabitFormData в функцию onAdd ***
+    onAdd(newHabitData);
     // onClose() вызывается внутри handleAddHabit в App.tsx
   };
 

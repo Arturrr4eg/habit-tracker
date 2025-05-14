@@ -12,8 +12,10 @@ $sber-light-grey: #EEEEEE;
 $sber-dark-grey: #333333;
 
 // Определение контрольных точек (брейкпоинтов) для медиазапросов (примерные)
+$breakpoint-bxz: 960px;
 $breakpoint-tablet: 768px;
 $breakpoint-mobile: 480px;
+$breakpoint-xz: 639px;
 
 
 body {
@@ -113,12 +115,22 @@ code {
   flex-grow: 1;
   padding: 20px;
 	padding-bottom: 135px;// Базовый отступ, можно адаптировать
+	@media (max-width: $breakpoint-bxz){
+		padding: 15px;
+		padding-bottom: 100px;
+	}
   @media (max-width: $breakpoint-tablet) {
       padding: 15px;
-			padding-bottom: 70px;
+			padding-bottom: 100px;
   }
+	@media (max-width: $breakpoint-xz){
+			padding: 10px;
+			padding-bottom: 110px;
     @media (max-width: $breakpoint-mobile) {
       padding: 10px;
+			padding-bottom: 110px;
+
+		}
   }
 
   // padding-bottom будет добавлен инлайн-стилем

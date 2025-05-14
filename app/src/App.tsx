@@ -14,6 +14,16 @@ interface DeleteHabitAction {
 }
 
 
+
+const getTodayDateString = (): string => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+    const day = today.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
+
 const isDev = import.meta.env.MODE === 'development';
 
 const generateUniqueId = (): string => {
@@ -46,10 +56,11 @@ const App = () => {
       duration: 21,
       startTime: '07:00',
       endTime: '08:00',
-      progress: 40,
+      progress: 7,
       goal: 'Пить 2 литра воды каждый день',
       icon: '💧',
-      completedToday: true,
+      //completedToday: true,
+			lastCompletedDate: undefined
     },
     {
 			id: generateUniqueId(),
@@ -57,10 +68,11 @@ const App = () => {
       duration: 30,
       startTime: '20:00',
       endTime: '21:00',
-      progress: 60,
+      progress: 15,
       goal: 'Прочитать 10 страниц каждый день',
       icon: '📚',
-      completedToday: false,
+      //completedToday: false,
+			lastCompletedDate: undefined
     },
   ]);
 
@@ -97,16 +109,46 @@ const handleDeleteHabit = (idToDelete: string) => {
 
 
   // Обработчик добавления привычки, который также закрывает модальное окно
-  const handleAddHabit = (newHabitData: Omit<Habit, 'id' | 'completedToday'> & { completedToday?: boolean }) => {
-    console.log('Adding new habit:', newHabitData);
+ 	const handleAddHabit = (newHabitData: Omit<Habit, 'id' | 'completedToday' | 'lastCompletedDate'>) => {
     // Создаем полный объект Habit с уникальным ID
     const habitWithId: Habit = {
         ...newHabitData,
         id: generateUniqueId(), // Генерируем и присваиваем уникальный ID
-        completedToday: newHabitData.completedToday ?? false, // Убедимся, что completedToday имеет значение (по умолчанию false)
+        lastCompletedDate: undefined
+				//completedToday: newHabitData.completedToday ?? false, // Убедимся, что completedToday имеет значение (по умолчанию false)
     };
     setHabits(prev => [...prev, habitWithId]);
     handleCloseModal();
+  };
+
+
+	const handleCompleteToday = (idToComplete: string) => {
+      console.log('Attempting to mark habit as completed today for ID:', idToComplete);
+      const todayString = getTodayDateString(); // Получаем текущую дату
+
+      setHabits(prevHabits => {
+          return prevHabits.map(habit => {
+              // Находим привычку по ID
+              if (habit.id === idToComplete) {
+                  // *** Логика отметки выполнения: Только если прогресс меньше длительности ***
+                  if (habit.progress < habit.duration) {
+                       console.log(`Increasing progress and marking date for habit ${idToComplete}.`);
+                       // Возвращаем новый объект привычки с обновленными полями
+                       return {
+                           ...habit,
+                           progress: habit.progress + 1, // Увеличиваем прогресс на 1
+                           lastCompletedDate: todayString, // Записываем сегодняшнюю дату
+                       };
+                  } else {
+                      // Если прогресс уже достиг или превысил длительность, ничего не делаем
+                      console.log(`Habit ${idToComplete} has already reached its duration goal.`);
+                      return habit;
+                  }
+              }
+              // Для всех остальных привычек возвращаем их без изменений
+              return habit;
+          });
+      });
   };
 
 
@@ -167,6 +209,16 @@ const handleDeleteHabit = (idToDelete: string) => {
         // --- КОНЕЦ ИСПРАВЛЕННОЙ Обработки действия удаления привычки по ID ---
 
         // Здесь можно добавить обработку других типов action
+				else if (event.action.type === 'complete_habit_voice') { // Используем тип CompleteHabitVoiceAction
+             if ('id' in event.action && typeof event.action.id === 'string' && event.action.id) {
+                 const habitIdToComplete = event.action.id;
+                 console.log('Received complete_habit_voice action for ID:', habitIdToComplete);
+                 // Вызываем нашу функцию отметки выполнения
+                 handleCompleteToday(habitIdToComplete);
+             } else {
+                 console.warn('Received complete_habit_voice action without a valid ID:', event.action);
+             }
+        }
       }
       // Здесь можно обрабатывать другие типы событий data, не связанные с action
     });
@@ -201,7 +253,7 @@ const handleDeleteHabit = (idToDelete: string) => {
               Добавить привычку
             </button>
           <Routes>
-            <Route path="/" element={<Home habits={habits}  onDeleteHabit={handleDeleteHabit}/>} />
+            <Route path="/" element={<Home habits={habits}  onDeleteHabit={handleDeleteHabit} onCompleteToday={handleCompleteToday}/>} />
             <Route path="/stats" element={<Stats />} />
           </Routes>
 

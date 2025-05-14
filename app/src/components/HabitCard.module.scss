@@ -1,7 +1,22 @@
-/* ./components/HabitCard.module.scss - Скорректировано */
+/* ./components/HabitCard.module.scss - Скорректировано (Стили кнопки 'Выполнить сегодня') */
 
 // Импортируем цвета и брейкпоинты
-@import '../styles/App.scss';
+// @use '../styles/App.scss' as app; // Если используете @use
+
+// Или определите цвета заново
+$sber-white: #FFFFFF;
+$sber-dark-grey: #333333;
+$sber-light-grey: #EEEEEE;
+$sber-green-primary: #4BB34B;
+$sber-green-light: #8BC34A;
+$status-done-green: #66BB6A; // Можно использовать этот цвет для активной кнопки
+$status-missed-red: #f44336; // Можно использовать этот цвет для неактивной кнопки
+$delete-button-grey: #B0B0B0;
+$delete-button-red-hover: #E57373;
+
+// Определение контрольных точек (брейкпоинтов) для медиазапросов (примерные)
+$breakpoint-tablet: 768px;
+$breakpoint-mobile: 480px;
 
 
 .card {
@@ -16,14 +31,14 @@
   display: flex;
   flex-direction: column;
   position: relative;
-	margin-bottom: 20px;// *** ОБЯЗАТЕЛЬНО: Нужно для абсолютного позиционирования дочерних элементов ***
+  margin-bottom: 15px; // Отступ между карточками
 }
 
 .header {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
-  // Адаптация на мобильных
+
   @media (max-width: $breakpoint-mobile) {
       flex-direction: column;
       align-items: flex-start;
@@ -33,6 +48,7 @@
 .icon {
   font-size: 1.8em;
   margin-right: 10px;
+
   @media (max-width: $breakpoint-mobile) {
       font-size: 1.5em;
       margin-right: 0;
@@ -45,6 +61,7 @@
   font-size: 1.3em;
   color: $sber-dark-grey;
   flex-grow: 1;
+
   @media (max-width: $breakpoint-mobile) {
       font-size: 1.1em;
   }
@@ -63,9 +80,18 @@
   }
 }
 
+// *** Стили для отображения даты последнего выполнения ***
+.lastCompletedDate {
+    font-size: 0.8em;
+    color: #888; // Более тусклый цвет для даты
+    margin-top: 5px; // Отступ сверху
+}
+// *** КОНЕЦ СТИЛЕЙ ДЛЯ ДАТЫ ***
+
+
 .progressBar {
   height: 8px;
-  background: #eee;
+  background: $sber-light-grey;
   border-radius: 4px;
   overflow: hidden;
   margin-bottom: 6px;
@@ -73,7 +99,8 @@
 
 .progress {
   height: 100%;
-  background: linear-gradient(to right, #8BC34A, #4BB34B); // Пример зеленого градиента
+  background: linear-gradient(to right, $sber-green-light, $sber-green-primary);
+  border-radius: 4px;
   transition: width 0.3s ease;
 }
 
@@ -84,51 +111,71 @@
   margin-bottom: 8px;
 }
 
-.status {
+// *** СТИЛИ ДЛЯ КНОПКИ "Выполнить сегодня" ***
+.completeButton {
   font-size: 0.9em;
   font-weight: 600;
-  padding: 4px 8px;
+  padding: 8px 12px; // Увеличиваем padding для лучшей кликабельности
   border-radius: 8px;
-  display: inline-block; // Чтобы padding применялся корректно
+  display: inline-block;
+  text-align: center;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, opacity 0.2s ease; // Добавляем transition для background-color
+  width: fit-content;
+  margin-top: 10px; // Отступ сверху от прогресс-текста
+
+  // Стиль для активной кнопки
+  background-color: $status-missed-red; // Зеленый фон
+  color: $sber-white;
+
+  &:hover:not(:disabled) {
+      background-color: darken($status-missed-red, 10%); // Темнее при наведении
+  }
+  &:active:not(:disabled) {
+      opacity: 0.8; // Прозрачность при клике
+  }
+
+  // Стиль для отключенной кнопки (когда цель достигнута)
+  &:disabled {
+      background-color: $status-done-green; // Красный фон
+      color: $sber-white;
+      cursor: default;
+      opacity: 1; // Не уменьшаем прозрачность
+  }
 }
 
-.done {
-  color: #fff;
-  background: #4caf50; // Пример зеленого для выполнено
-}
+// *** УДАЛЕНЫ СТИЛИ .status, .done, .missed, которые относились к старому статусу ***
+// .status { ... }
+// .done { ... }
+// .missed { ... }
+// *** КОНЕЦ УДАЛЕНИЯ ***
 
-.missed {
-  color: #fff;
-  background: #f44336; // Пример красного для не выполнено
-}
 
-// *** НОВЫЕ СТИЛИ ДЛЯ КНОПКИ УДАЛЕНИЯ (КРЕСТИК) ***
 .deleteButton {
-  position: absolute; // Позиционируем абсолютно внутри .card
-  top: 10px; // Отступ сверху от края карточки
-  right: 10px; // Отступ справа от края карточки
-  background: none; // Без фонового цвета
-  border: none; // Без рамки
-  color: #B0B0B0; // Серый цвет крестика (можно изменить)
-  font-size: 1.5em; // Размер крестика (можно адаптировать)
-  cursor: pointer; // Курсор в виде указателя
-  padding: 0; // Убираем внутренние отступы кнопки
-  line-height: 1; // Обеспечиваем правильное выравнивание символа крестика
-  transition: color 0.2s ease, transform 0.2s ease; // Плавное изменение цвета и масштаба
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: $delete-button-grey;
+  font-size: 1.5em;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s ease, transform 0.2s ease;
 
   &:hover {
-    color: #E57373; // Цвет при наведении (светло-красный)
-    transform: scale(1.1); // Немного увеличиваем при наведении
+    color: $delete-button-red-hover;
+    transform: scale(1.1);
   }
   &:active {
-    opacity: 0.7; // Прозрачность при клике
+    opacity: 0.7;
   }
 
-  // Адаптация позиции/размера на мобильных, если нужно
   @media (max-width: $breakpoint-mobile) {
       top: 5px;
       right: 5px;
       font-size: 1.2em;
   }
 }
-// *** КОНЕЦ НОВЫХ СТИЛЕЙ ***

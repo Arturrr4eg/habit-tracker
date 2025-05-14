@@ -4,10 +4,10 @@ import HabitCard, { Habit } from '../../components/HabitCard';
 type HomeProps = {
   habits: Habit[];
 	onDeleteHabit: (id: string) => void;
-
+	onCompleteToday: (id: string) => void;
 };
 
-const Home: React.FC<HomeProps> = ({ habits, onDeleteHabit }) => { // Получаем функцию onDeleteHabit из пропсов
+const Home: React.FC<HomeProps> = ({ habits, onDeleteHabit, onCompleteToday }) => { // Получаем функцию onDeleteHabit из пропсов
   return (
     <div className="home-container"> {/* Обертка для всего контента Home */}
       <h2>Мои привычки</h2> {/* Заголовок списка привычек */}
@@ -25,6 +25,7 @@ const Home: React.FC<HomeProps> = ({ habits, onDeleteHabit }) => { // Получ
               <HabitCard
                  {...habit} // Передаем все поля habit, включая id
                  onDeleteHabit={onDeleteHabit} // Передаем функцию удаления
+								 onCompleteToday={onCompleteToday}
               />
             </div>
           ))}

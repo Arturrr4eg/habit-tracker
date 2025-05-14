@@ -9,24 +9,38 @@ export type Habit = { // Habibi card ahahaha
   progress: number; // 0–100
   goal: string;
   icon?: string; // Emoji или SVG путь
-  completedToday: boolean;
+  //completedToday: boolean;
+	lastCompletedDate?: string;
 };
-type HabitCardProps = Habit & {
+type HabitCardProps = Omit<Habit, 'completedToday'> & {
     onDeleteHabit: (id: string) => void; // Функция для удаления
+    onCompleteToday: (id: string) => void; // *** ИЗМЕНЕНО: Функция для отметки выполнения сегодня ***
 };
 
 const HabitCard: React.FC<HabitCardProps> = ({
 	id,
 	onDeleteHabit,
+	onCompleteToday,
   title = "wiwiw",
   duration = 21,
   startTime = "19:30",
   endTime = "23:40",
-  progress = 50,
+  progress = 7,
   goal = "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Qui esse amet asperiores voluptatum unde et, labore vel animi nam consectetur ipsam quidem itaque nostrum ab sapiente iste neque, nulla sequi.",
   icon = '🔥',
-  completedToday = false,
+  // completedToday больше не получаем
+  lastCompletedDate, // *** Получаем дату последнего выполнения ***
 }) => {
+
+	const progressPercent = duration > 0 ? (progress / duration) * 100 : 0;
+
+  // Проверяем, достигнут ли прогресс цели
+  const isCompleted = progress >= duration;
+
+	const displayLastCompletedDate = lastCompletedDate ?
+    `Последнее выполнение: ${lastCompletedDate}` :
+    'Еще не выполнялась';
+
   return (
 
     <div className={styles.card}>
@@ -50,18 +64,30 @@ const HabitCard: React.FC<HabitCardProps> = ({
         <div><strong>Срок:</strong> {duration} дней</div>
         <div><strong>Время:</strong> {startTime} – {endTime}</div>
       </div>
+			<div className={styles.lastCompletedDate}>{displayLastCompletedDate}</div>
 
       <div className={styles.progressBar}>
         <div
           className={styles.progress}
-          style={{ width: `${progress}%` }}
+          style={{ width: `${progressPercent}%` }}
         />
       </div>
-      <div className={styles.progressText}>Прогресс: {progress}%</div>
+      <div className={styles.progressText}>Прогресс: {Math.round(progressPercent)}%</div>
 
-      <div className={`${styles.status} ${completedToday ? styles.done : styles.missed}`}>
-        {completedToday ? 'Выполнено сегодня' : 'Не выполнено'}
-      </div>
+			<button
+          onClick={() => {
+              // Вызываем onCompleteToday только если прогресс не достиг цели
+              if (!isCompleted) {
+                  onCompleteToday(id);
+              }
+          }}
+          // Добавляем класс для стилизации и состояние disabled
+          className={styles.completeButton}
+          disabled={isCompleted} // Кнопка отключена, если прогресс достиг цели
+          aria-label={isCompleted ? 'Цель достигнута' : 'Отметить выполнение сегодня'}
+      >
+        {isCompleted ? 'Цель достигнута!' : 'Выполнить сегодня'}
+      </button>
     </div>
   );
 };
