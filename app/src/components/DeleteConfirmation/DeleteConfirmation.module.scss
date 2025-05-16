@@ -1,0 +1,67 @@
+$sber-dark-grey: #333333;
+$sber-white: #FFFFFF;
+$confirm-green: #4CAF50; // Зеленый для подтверждения
+$cancel-grey: #B0B0B0; // Серый для отмены
+$cancel-grey-hover: #888; // Темнее серый при наведении
+
+
+.confirmationContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 10px; // Внутренний отступ
+}
+
+.confirmationContainer h2 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: $sber-dark-grey;
+}
+
+.confirmationContainer p {
+  margin-bottom: 20px;
+  font-size: 1.1em;
+  color: $sber-dark-grey;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 15px; // Расстояние между кнопками
+  justify-content: center; // Центрируем кнопки
+}
+
+.confirmButton,
+.cancelButton {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: bold;
+  transition: opacity 0.2s ease;
+}
+
+.confirmButton {
+  background-color: $confirm-green;
+  color: $sber-white;
+
+  &:hover {
+    opacity: 0.9;
+  }
+  &:active {
+    opacity: 0.7;
+  }
+}
+
+.cancelButton {
+  background-color: $cancel-grey;
+  color: $sber-white;
+
+  &:hover {
+    background-color: $cancel-grey-hover;
+  }
+  &:active {
+    opacity: 0.7;
+  }
+}

@@ -17,6 +17,9 @@ $breakpoint-tablet: 768px;
 $breakpoint-mobile: 480px;
 $breakpoint-xz: 639px;
 
+#root {
+	  background: linear-gradient(to bottom right, $sber-blue-green, $sber-green-primary);
+}
 
 body {
   margin: 0;
@@ -27,9 +30,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  background: linear-gradient(to bottom right, $sber-blue-green, $sber-green-primary);
-
-  color: $sber-dark-grey;
+	color: $sber-dark-grey;
 
   // Адаптация базового размера шрифта для меньших экранов (используем rem)
   font-size: 16px; // Базовый размер для rem
