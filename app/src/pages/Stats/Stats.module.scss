@@ -1,0 +1,94 @@
+/* pages/Stats.module.scss - Стили статистики (обновлено) */
+
+// Импортируем цвета, если используете SCSS-модули
+// @use '../styles/App.scss' as app;
+
+// Или определите цвета заново
+$sber-dark-grey: #333333;
+$sber-light-grey: #EEEEEE;
+$sber-green-primary: #4BB34B;
+
+
+.statsContainer {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 10px;
+}
+
+.statsContainer h2 {
+  text-align: center;
+  color: $sber-dark-grey;
+  margin-bottom: 20px;
+}
+
+.statsContainer h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: $sber-dark-grey;
+    border-bottom: 1px solid $sber-light-grey; // Линия под заголовком раздела
+    padding-bottom: 5px;
+}
+
+.statsContainer p {
+    text-align: center;
+    color: $sber-dark-grey;
+    font-size: 1.1em;
+    margin-bottom: 20px;
+}
+
+.completedList {
+    list-style: none; // Убираем стандартные маркеры списка
+    padding: 0;
+    margin: 0;
+}
+
+.completedItem {
+    background-color: #E0F2F7; // Светлый фон для элемента списка выполненных привычек (пример)
+    border: 1px solid #B2EBF2; // Легкая рамка (пример)
+    border-radius: 8px;
+    padding: 15px; // Увеличиваем padding
+    margin-bottom: 10px; // Отступ между элементами
+    display: flex;
+    flex-direction: column; // Элементы внутри карточки в колонку
+    gap: 10px; // Расстояние между блоками внутри элемента
+}
+
+.itemHeader {
+    display: flex;
+    align-items: center;
+    gap: 10px; // Расстояние между иконкой и названием
+    border-bottom: 1px dashed $sber-light-grey; // Пунктирная линия под заголовком элемента
+    padding-bottom: 10px;
+    margin-bottom: 10px; // Отступ после линии
+}
+
+.completedItem .icon {
+    font-size: 1.5em; // Увеличиваем размер иконки
+}
+
+.completedItem .title {
+    font-weight: bold;
+    color: $sber-dark-grey;
+    flex-grow: 1;
+    font-size: 1.1em; // Увеличиваем размер названия
+}
+
+.itemDetails {
+    font-size: 0.9em;
+    color: #555; // Цвет текста деталей
+    display: flex;
+    flex-direction: column;
+    gap: 5px; // Расстояние между строками деталей
+}
+
+.itemDetails strong {
+    color: $sber-dark-grey; // Цвет жирного текста
+}
+
+
+.completedItem .completionDate {
+    font-size: 0.8em;
+    color: #666;
+    margin-top: 5px; // Отступ сверху от деталей
+}
