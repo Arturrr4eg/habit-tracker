@@ -8,7 +8,8 @@ type HomeProps = {
 };
 
 const Home: React.FC<HomeProps> = ({ habits, onDeleteHabit, onCompleteToday }) => { // Получаем функцию onDeleteHabit из пропсов
-  return (
+  console.log('Home: Rendering with habits:', habits);
+	return (
     <div className="home-container"> {/* Обертка для всего контента Home */}
       <h2>Мои привычки</h2> {/* Заголовок списка привычек */}
 

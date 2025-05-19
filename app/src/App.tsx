@@ -14,7 +14,6 @@ import AddHabitForm from './pages/AddHabit/AddHabitForm';
 import DeleteConfirmation from './components/DeleteConfirmation/DeleteConfirmation';
 import CompletionModal from './components/CompletionModal/CompletionModal';
 
-
 const getTodayDateString = (): string => {
 	const today = new Date();
 	const year = today.getFullYear();
@@ -96,27 +95,27 @@ const App = () => {
 	const [completedHabitDetails, setCompletedHabitDetails] = useState<Habit | null>(null); // Детали выполненной привычки
 
 	const handleDeleteHabit = useCallback(
-    (id: string) => {
-      console.log('Requesting deletion confirmation for habit with ID:', id);
-      // Используем актуальное состояние activeHabits из замыкания useCallback
-      const habit = activeHabits.find((h) => h.id === id);
-      if (habit) {
-        setHabitToDeleteId(id);
-        setHabitToDeleteTitle(habit.title);
-        setShowDeleteConfirmationModal(true);
-      } else {
-        console.warn('Attempted to delete non-existent habit with ID:', id);
-      }
-    },
-    [activeHabits], // Зависит от activeHabits
-  );
+		(id: string) => {
+			console.log('Requesting deletion confirmation for habit with ID:', id);
+			// Используем актуальное состояние activeHabits из замыкания useCallback
+			const habit = activeHabits.find((h) => h.id === id);
+			if (habit) {
+				setHabitToDeleteId(id);
+				setHabitToDeleteTitle(habit.title);
+				setShowDeleteConfirmationModal(true);
+			} else {
+				console.warn('Attempted to delete non-existent habit with ID:', id);
+			}
+		},
+		[activeHabits], // Зависит от activeHabits
+	);
 
-	const confirmDeleteHabit = () => {
-		if (habitToDeleteId) {
-			console.log('Confirming deletion for habit with ID:', habitToDeleteId);
+	const confirmDeleteHabit = (idToDelete: string | null) => {
+		if (idToDelete) {
+			console.log('Confirming deletion for habit with ID:', idToDelete);
 			// Выполняем фактическое удаление
 			setHabits((prevHabits) => {
-				const newHabits = prevHabits.filter((habit) => habit.id !== habitToDeleteId);
+				const newHabits = prevHabits.filter((habit) => habit.id !== idToDelete);
 				console.log('New habits list after confirmed deletion:', newHabits);
 				return newHabits;
 			});
@@ -159,82 +158,89 @@ const App = () => {
 		handleCloseModal();
 	};
 
-	 const handleCompleteToday = (idToComplete: string) => {
-      console.log('Attempting to mark habit as completed today for ID:', idToComplete);
-      const todayString = getTodayDateString();
+	const handleCompleteToday = (idToComplete: string) => {
+		console.log('Attempting to mark habit as completed today for ID:', idToComplete);
+		const todayString = getTodayDateString();
 
-      setActiveHabits(prevActiveHabits => {
-          // Находим привычку, которую нужно обновить
-          const habitToUpdate = prevActiveHabits.find(habit => habit.id === idToComplete);
+		setActiveHabits((prevActiveHabits) => {
+			// Находим привычку, которую нужно обновить
+			const habitToUpdate = prevActiveHabits.find((habit) => habit.id === idToComplete);
 
-          if (!habitToUpdate) {
-              console.warn(`Habit with ID ${idToComplete} not found in active habits.`);
-              return prevActiveHabits; // Возвращаем список без изменений
-          }
+			if (!habitToUpdate) {
+				console.warn(`Habit with ID ${idToComplete} not found in active habits.`);
+				return prevActiveHabits; // Возвращаем список без изменений
+			}
 
-          // Только если прогресс меньше длительности
-          if (habitToUpdate.progress < habitToUpdate.duration) {
-               console.log(`Increasing progress and marking date for habit with ID: ${idToComplete}.`);
-               const newProgress = habitToUpdate.progress + 1;
-               const updatedHabit = {
-                   ...habitToUpdate,
-                   progress: newProgress, // Увеличиваем прогресс
-                   lastCompletedDate: todayString, // Записываем сегодняшнюю дату
-               };
+			// Только если прогресс меньше длительности
+			if (habitToUpdate.progress < habitToUpdate.duration) {
+				console.log(
+					`Increasing progress and marking date for habit with ID: ${idToComplete}.`,
+				);
+				const newProgress = habitToUpdate.progress + 1;
+				const updatedHabit = {
+					...habitToUpdate,
+					progress: newProgress, // Увеличиваем прогресс
+					lastCompletedDate: todayString, // Записываем сегодняшнюю дату
+				};
 
-               // *** ПРОВЕРКА НА ПОЛНОЕ ЗАВЕРШЕНИЕ И АВТОМАТИЧЕСКОЕ ПЕРЕМЕЩЕНИЕ ***
-               if (newProgress >= updatedHabit.duration) {
-                   console.log(`Habit with ID ${updatedHabit.id} completed! Moving to completed list.`);
+				// *** ПРОВЕРКА НА ПОЛНОЕ ЗАВЕРШЕНИЕ И АВТОМАТИЧЕСКОЕ ПЕРЕМЕЩЕНИЕ ***
+				if (newProgress >= updatedHabit.duration) {
+					console.log(
+						`Habit with ID ${updatedHabit.id} completed! Moving to completed list.`,
+					);
 
-                   // *** Добавляем выполненную привычку в список выполненных СРАЗУ ***
-                   setCompletedHabits(prevCompleted => [...prevCompleted, updatedHabit]);
+					// *** Добавляем выполненную привычку в список выполненных СРАЗУ ***
+					setCompletedHabits((prevCompleted) => [...prevCompleted, updatedHabit]);
 
-                   // *** Удаляем выполненную привычку из списка активных СРАЗУ ***
-                   const newActiveHabits = prevActiveHabits.filter(habit => habit.id !== idToComplete);
+					// *** Удаляем выполненную привычку из списка активных СРАЗУ ***
+					const newActiveHabits = prevActiveHabits.filter(
+						(habit) => habit.id !== idToComplete,
+					);
 
-                   // *** Сохраняем детали для модалки и показываем модалку (УЖЕ ПОСЛЕ ОБНОВЛЕНИЯ СОСТОЯНИЙ) ***
-                   setCompletedHabitDetails(updatedHabit); // Сохраняем детали выполненной привычки
-                   setShowCompletionModal(true); // Показываем модальное окно поздравления
+					// *** Сохраняем детали для модалки и показываем модалку (УЖЕ ПОСЛЕ ОБНОВЛЕНИЯ СОСТОЯНИЙ) ***
+					setCompletedHabitDetails(updatedHabit); // Сохраняем детали выполненной привычки
+					setShowCompletionModal(true); // Показываем модальное окно поздравления
 
-                   // Возвращаем НОВЫЙ список активных привычек (без выполненной)
-                   return newActiveHabits;
+					// Возвращаем НОВЫЙ список активных привычек (без выполненной)
+					return newActiveHabits;
+				} else {
+					// Если цель еще не достигнута, возвращаем обновленную привычку в списке активных
+					return prevActiveHabits.map((habit) =>
+						habit.id === idToComplete ? updatedHabit : habit,
+					);
+				}
+				// *** КОНЕЦ ПРОВЕРКИ НА ПОЛНОЕ ЗАВЕРШЕНИЕ И АВТОМАТИЧЕСКОЕ ПЕРЕМЕЩЕНИЕ ***
+			} else {
+				// Если прогресс уже достиг или превысил длительность (хотя кнопка должна быть disabled)
+				console.log(
+					`Habit with ID ${habitToUpdate.id} has already reached its duration goal.`,
+				);
+				return prevActiveHabits; // Возвращаем список без изменений
+			}
+		});
+	};
+	// *** КОНЕЦ МОДИФИКАЦИИ handleCompleteToday ***
 
-               } else {
-                   // Если цель еще не достигнута, возвращаем обновленную привычку в списке активных
-                   return prevActiveHabits.map(habit => habit.id === idToComplete ? updatedHabit : habit);
-               }
-               // *** КОНЕЦ ПРОВЕРКИ НА ПОЛНОЕ ЗАВЕРШЕНИЕ И АВТОМАТИЧЕСКОЕ ПЕРЕМЕЩЕНИЕ ***
+	// *** МОДИФИЦИРОВАНА confirmCompletion - теперь она только закрывает модалку ***
+	const confirmCompletion = () => {
+		console.log('Completion modal confirmed (habit already moved).');
+		// Привычка уже перемещена в handleCompleteToday
+		// Просто сбрасываем состояние модального окна поздравления
+		setCompletedHabitDetails(null);
+		setShowCompletionModal(false);
+		// Возможно, отправить голосовой ответ: "Поздравляю с выполнением привычки!"
+		// assistantRef.current?.sendData({ type: 'tts', value: `Поздравляю с выполнением привычки "${completedHabitDetails?.title}"!` }); // Пример с голосовым ответом
+	};
+	// *** КОНЕЦ МОДИФИКАЦИИ confirmCompletion ***
 
-          } else {
-              // Если прогресс уже достиг или превысил длительность (хотя кнопка должна быть disabled)
-              console.log(`Habit with ID ${habitToUpdate.id} has already reached its duration goal.`);
-              return prevActiveHabits; // Возвращаем список без изменений
-          }
-      });
-  };
-  // *** КОНЕЦ МОДИФИКАЦИИ handleCompleteToday ***
-
-
-  // *** МОДИФИЦИРОВАНА confirmCompletion - теперь она только закрывает модалку ***
-  const confirmCompletion = () => {
-      console.log('Completion modal confirmed (habit already moved).');
-      // Привычка уже перемещена в handleCompleteToday
-      // Просто сбрасываем состояние модального окна поздравления
-      setCompletedHabitDetails(null);
-      setShowCompletionModal(false);
-      // Возможно, отправить голосовой ответ: "Поздравляю с выполнением привычки!"
-      // assistantRef.current?.sendData({ type: 'tts', value: `Поздравляю с выполнением привычки "${completedHabitDetails?.title}"!` }); // Пример с голосовым ответом
-  };
-  // *** КОНЕЦ МОДИФИКАЦИИ confirmCompletion ***
-
-   // *** МОДИФИЦИРОВАНА cancelCompletionModal - теперь она только закрывает модалку ***
-   const cancelCompletionModal = () => {
-       console.log('Completion modal closed (habit already moved).');
-       // Привычка уже перемещена в handleCompleteToday
-       // Просто сбрасываем состояние модального окна поздравления
-       setCompletedHabitDetails(null);
-       setShowCompletionModal(false);
-   };
+	// *** МОДИФИЦИРОВАНА cancelCompletionModal - теперь она только закрывает модалку ***
+	const cancelCompletionModal = () => {
+		console.log('Completion modal closed (habit already moved).');
+		// Привычка уже перемещена в handleCompleteToday
+		// Просто сбрасываем состояние модального окна поздравления
+		setCompletedHabitDetails(null);
+		setShowCompletionModal(false);
+	};
 
 	useEffect(() => {
 		const assistant = initializeAssistant(() => {
@@ -390,7 +396,7 @@ const App = () => {
 							{/* Закрываем модалку при клике вне или на крестик */}
 							<DeleteConfirmation
 								habitTitle={habitToDeleteTitle} // Передаем название привычки
-								onConfirm={confirmDeleteHabit} // Функция для подтверждения
+								onConfirm={() => confirmDeleteHabit(habitToDeleteId)} // Функция для подтверждения
 								onCancel={cancelDeleteHabit} // Функция для отмены
 							/>
 						</Modal>
