@@ -114,11 +114,11 @@ const App = () => {
 		if (idToDelete) {
 			console.log('Confirming deletion for habit with ID:', idToDelete);
 			// Выполняем фактическое удаление
-			setHabits((prevHabits) => {
-				const newHabits = prevHabits.filter((habit) => habit.id !== idToDelete);
-				console.log('New habits list after confirmed deletion:', newHabits);
-				return newHabits;
-			});
+			setHabits((prevHabits) => prevHabits.filter((habit) => habit.id !== idToDelete));
+		setActiveHabits((prevActive) => prevActive.filter((habit) => habit.id !== idToDelete));
+		setCompletedHabits((prevCompleted) =>
+			prevCompleted.filter((habit) => habit.id !== idToDelete),
+			);
 			// Сбрасываем состояние модального окна
 			setHabitToDeleteId(null);
 			setHabitToDeleteTitle(null);
