@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import {
 	createAssistant,
 	createSmartappDebugger,
@@ -17,19 +17,34 @@ import CompletionModal from './components/CompletionModal/CompletionModal';
 
 const STORAGE_KEY = 'habitTrackerData';
 
-const loadFromStorage = (): { habits: Habit[] } | null => {
+const loadFromStorage = (): { habits: Habit[] } => {
   try {
     const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : null;
+    if (data) {
+      const parsed = JSON.parse(data);
+      // Восстанавливаем даты из строк
+      const habits = parsed.habits.map((habit: Habit) => ({
+        ...habit,
+        lastCompletedDate: habit.lastCompletedDate
+          ? habit.lastCompletedDate
+          : undefined
+      }));
+      return { habits };
+    }
   } catch (e) {
-    console.error('Failed to parse stored data', e);
-    return null;
+    console.error('Failed to load data', e);
   }
+  return { habits: DEFAULT_HABITS };
 };
 
-const saveToStorage = (habits: Habit[]) => {
+const saveToStorage = (allHabits: Habit[]) => {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ habits }));
+    const data = {
+      habits: allHabits,
+      // Добавляем дату последнего сохранения
+      savedAt: new Date().toISOString()
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   } catch (e) {
     console.error('Failed to save data', e);
   }
@@ -94,20 +109,25 @@ const initializeAssistant = (getState: () => AssistantAppState, getRecoveryState
 
 const App = () => {
 	const assistantRef = useRef<ReturnType<typeof createAssistant>>();
-	const [habits, setHabits] = useState<Habit[]>(() => {
-  const savedData = loadFromStorage();
-    return savedData?.habits || DEFAULT_HABITS;
+	const [allHabits, setAllHabits] = useState<Habit[]>(() => {
+    const { habits } = loadFromStorage();
+    return habits;
   });
 
-	const [completedHabits, setCompletedHabits] = useState<Habit[]>(
-		// Фильтруем начальный список, чтобы разделить активные и выполненные
-		habits.filter((habit) => habit.progress >= habit.duration),
-	);
+  // Производные состояния
+  const activeHabits = useMemo(() =>
+    allHabits.filter(habit => habit.progress < habit.duration),
+    [allHabits]
+  );
 
-	const [activeHabits, setActiveHabits] = useState<Habit[]>(
-		habits.filter((habit) => habit.progress < habit.duration),
-	);
+  const completedHabits = useMemo(() =>
+    allHabits.filter(habit => habit.progress >= habit.duration),
+    [allHabits]
+  );
 
+	  useEffect(() => {
+    saveToStorage(allHabits);
+  }, [allHabits]);
 
 
 	// Состояние для управления видимостью модального окна
@@ -116,16 +136,11 @@ const App = () => {
 	const [initialHabitTitle, setInitialHabitTitle] = useState<string | undefined>(
 		undefined,
 	);
-
-
-
-useEffect(() => {
-    saveToStorage(habits);
-  }, [habits]);
+;
 
 	const getRecoveryState = useCallback(() => {
-    return { habits };
-  }, [habits]);
+    return { allHabits };
+  }, [allHabits]);
 
 	const [showDeleteConfirmationModal, setShowDeleteConfirmationModal] = useState(false);
 	const [habitToDeleteId, setHabitToDeleteId] = useState<string | null>(null);
@@ -154,11 +169,7 @@ useEffect(() => {
 		if (idToDelete) {
 			console.log('Confirming deletion for habit with ID:', idToDelete);
 			// Выполняем фактическое удаление
-			setHabits((prevHabits) => prevHabits.filter((habit) => habit.id !== idToDelete));
-		setActiveHabits((prevActive) => prevActive.filter((habit) => habit.id !== idToDelete));
-		setCompletedHabits((prevCompleted) =>
-			prevCompleted.filter((habit) => habit.id !== idToDelete),
-			);
+			setAllHabits(prev => prev.filter(h => h.id !== idToDelete));
 			// Сбрасываем состояние модального окна
 			setHabitToDeleteId(null);
 			setHabitToDeleteTitle(null);
@@ -194,71 +205,52 @@ useEffect(() => {
 			lastCompletedDate: undefined,
 		};
 
-		setHabits((prev) => [...prev, habitWithId]);
+		setAllHabits((prev) => [...prev, habitWithId]);
 		handleCloseModal();
 	};
 
 	const handleCompleteToday = (idToComplete: string) => {
-		console.log('Attempting to mark habit as completed today for ID:', idToComplete);
-		const todayString = getTodayDateString();
+  console.log('Attempting to mark habit as completed today for ID:', idToComplete);
+  const todayString = getTodayDateString();
 
-		setActiveHabits((prevActiveHabits) => {
-			// Находим привычку, которую нужно обновить
-			const habitToUpdate = prevActiveHabits.find((habit) => habit.id === idToComplete);
+  setAllHabits(prevHabits => {
+    // Находим привычку, которую нужно обновить
+    const habitToUpdate = prevHabits.find(habit => habit.id === idToComplete);
 
-			if (!habitToUpdate) {
-				console.warn(`Habit with ID ${idToComplete} not found in active habits.`);
-				return prevActiveHabits; // Возвращаем список без изменений
-			}
+    if (!habitToUpdate) {
+      console.warn(`Habit with ID ${idToComplete} not found.`);
+      return prevHabits;
+    }
 
-			// Только если прогресс меньше длительности
-			if (habitToUpdate.progress < habitToUpdate.duration) {
-				console.log(
-					`Increasing progress and marking date for habit with ID: ${idToComplete}.`,
-				);
-				const newProgress = habitToUpdate.progress + 1;
-				const updatedHabit = {
-					...habitToUpdate,
-					progress: newProgress, // Увеличиваем прогресс
-					lastCompletedDate: todayString, // Записываем сегодняшнюю дату
-				};
+    // Проверяем, можно ли обновить прогресс
+    if (habitToUpdate.progress < habitToUpdate.duration) {
+      const newProgress = habitToUpdate.progress + 1;
+      const updatedHabit = {
+        ...habitToUpdate,
+        progress: newProgress,
+        lastCompletedDate: todayString
+      };
 
-				// *** ПРОВЕРКА НА ПОЛНОЕ ЗАВЕРШЕНИЕ И АВТОМАТИЧЕСКОЕ ПЕРЕМЕЩЕНИЕ ***
-				if (newProgress >= updatedHabit.duration) {
-					console.log(
-						`Habit with ID ${updatedHabit.id} completed! Moving to completed list.`,
-					);
+      // Проверка на полное завершение
+      if (newProgress >= updatedHabit.duration) {
+        console.log(`Habit with ID ${updatedHabit.id} completed!`);
 
-					// *** Добавляем выполненную привычку в список выполненных СРАЗУ ***
-					setCompletedHabits((prevCompleted) => [...prevCompleted, updatedHabit]);
+        // Показываем модальное окно поздравления
+        setCompletedHabitDetails(updatedHabit);
+        setShowCompletionModal(true);
+      }
 
-					// *** Удаляем выполненную привычку из списка активных СРАЗУ ***
-					const newActiveHabits = prevActiveHabits.filter(
-						(habit) => habit.id !== idToComplete,
-					);
+      // Обновляем массив привычек
+      return prevHabits.map(habit =>
+        habit.id === idToComplete ? updatedHabit : habit
+      );
+    }
 
-					// *** Сохраняем детали для модалки и показываем модалку (УЖЕ ПОСЛЕ ОБНОВЛЕНИЯ СОСТОЯНИЙ) ***
-					setCompletedHabitDetails(updatedHabit); // Сохраняем детали выполненной привычки
-					setShowCompletionModal(true); // Показываем модальное окно поздравления
-
-					// Возвращаем НОВЫЙ список активных привычек (без выполненной)
-					return newActiveHabits;
-				} else {
-					// Если цель еще не достигнута, возвращаем обновленную привычку в списке активных
-					return prevActiveHabits.map((habit) =>
-						habit.id === idToComplete ? updatedHabit : habit,
-					);
-				}
-				// *** КОНЕЦ ПРОВЕРКИ НА ПОЛНОЕ ЗАВЕРШЕНИЕ И АВТОМАТИЧЕСКОЕ ПЕРЕМЕЩЕНИЕ ***
-			} else {
-				// Если прогресс уже достиг или превысил длительность (хотя кнопка должна быть disabled)
-				console.log(
-					`Habit with ID ${habitToUpdate.id} has already reached its duration goal.`,
-				);
-				return prevActiveHabits; // Возвращаем список без изменений
-			}
-		});
-	};
+    // Если прогресс уже достиг цели
+    console.log(`Habit with ID ${habitToUpdate.id} already completed.`);
+    return prevHabits;
+  });
+};
 	// *** КОНЕЦ МОДИФИКАЦИИ handleCompleteToday ***
 
 	// *** МОДИФИЦИРОВАНА confirmCompletion - теперь она только закрывает модалку ***
@@ -379,11 +371,6 @@ useEffect(() => {
 		// Допустим, что getStateForAssistant может использовать habits для item_selector,
 		// поэтому оставляем habits в зависимостях.
 	}, [activeHabits, handleDeleteHabit, getRecoveryState]); // Оставляем habits в зависимостях, если getStateForAssistant его использует
-
-useEffect(() => {
-    setActiveHabits(habits.filter(habit => habit.progress < habit.duration));
-    setCompletedHabits(habits.filter(habit => habit.progress >= habit.duration));
-  }, [habits]);
 
 	return (
 		<Router>
