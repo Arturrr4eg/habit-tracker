@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import {
 	createAssistant,
 	createSmartappDebugger,
@@ -14,10 +14,6 @@ import AddHabitForm from './pages/AddHabit/AddHabitForm';
 import DeleteConfirmation from './components/DeleteConfirmation/DeleteConfirmation';
 import CompletionModal from './components/CompletionModal/CompletionModal';
 
-interface DeleteHabitAction {
-	type: 'delete_habit';
-	id: string; // Номер привычки (1-based)
-}
 
 const getTodayDateString = (): string => {
 	const today = new Date();
@@ -99,19 +95,21 @@ const App = () => {
 	const [showCompletionModal, setShowCompletionModal] = useState(false);
 	const [completedHabitDetails, setCompletedHabitDetails] = useState<Habit | null>(null); // Детали выполненной привычки
 
-	const handleDeleteHabit = (id: string) => {
-		console.log('Requesting deletion confirmation for habit with ID:', id);
-		// Находим привычку по ID, чтобы получить ее название для модалки
-		const habit = habits.find((h) => h.id === id);
-		if (habit) {
-			setHabitToDeleteId(id); // Сохраняем ID привычки для удаления
-			setHabitToDeleteTitle(habit.title); // Сохраняем название для отображения
-			setShowDeleteConfirmationModal(true); // Показываем модальное окно подтверждения
-		} else {
-			console.warn('Attempted to delete non-existent habit with ID:', id);
-			// Возможно, отправить голосовой ответ пользователю: "Извините, такой привычки нет."
-		}
-	};
+	const handleDeleteHabit = useCallback(
+    (id: string) => {
+      console.log('Requesting deletion confirmation for habit with ID:', id);
+      // Используем актуальное состояние activeHabits из замыкания useCallback
+      const habit = activeHabits.find((h) => h.id === id);
+      if (habit) {
+        setHabitToDeleteId(id);
+        setHabitToDeleteTitle(habit.title);
+        setShowDeleteConfirmationModal(true);
+      } else {
+        console.warn('Attempted to delete non-existent habit with ID:', id);
+      }
+    },
+    [activeHabits], // Зависит от activeHabits
+  );
 
 	const confirmDeleteHabit = () => {
 		if (habitToDeleteId) {
@@ -274,12 +272,11 @@ const App = () => {
 					setShowAddHabitModal(true);
 				} else if (event.action.type === 'delete_habit') {
 					// Проверяем, что поле id существует и является непустой строкой
-					// Тип HandledActions уже подсказывает TypeScript, что у delete_habit есть id
-					const deleteAction = event.action as DeleteHabitAction; // Приводим к типу удаления
+					// Тип HandledActions уже подсказывает TypeScript, что у delete_habit есть id// Приводим к типу удаления
 
 					// *** Проверяем наличие и тип поля id ***
-					if (typeof deleteAction.id === 'string' && deleteAction.id) {
-						const habitIdToDelete = deleteAction.id; // Получаем ID напрямую из action
+					if (typeof event.action.id === 'string' && event.action.id) {
+						const habitIdToDelete = event.action.id; // Получаем ID напрямую из action
 
 						console.log('Received delete_habit action for ID:', habitIdToDelete);
 
@@ -335,7 +332,7 @@ const App = () => {
 		// Однако, если getStateForAssistant использует habits, то habits должен остаться в зависимостях.
 		// Допустим, что getStateForAssistant может использовать habits для item_selector,
 		// поэтому оставляем habits в зависимостях.
-	}, [activeHabits]); // Оставляем habits в зависимостях, если getStateForAssistant его использует
+	}, [activeHabits, handleDeleteHabit]); // Оставляем habits в зависимостях, если getStateForAssistant его использует
 
 	return (
 		<Router>
