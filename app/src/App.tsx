@@ -14,6 +14,53 @@ import AddHabitForm from './pages/AddHabit/AddHabitForm';
 import DeleteConfirmation from './components/DeleteConfirmation/DeleteConfirmation';
 import CompletionModal from './components/CompletionModal/CompletionModal';
 
+
+const STORAGE_KEY = 'habitTrackerData';
+
+const loadFromStorage = (): { habits: Habit[] } | null => {
+  try {
+    const data = localStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : null;
+  } catch (e) {
+    console.error('Failed to parse stored data', e);
+    return null;
+  }
+};
+
+const saveToStorage = (habits: Habit[]) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ habits }));
+  } catch (e) {
+    console.error('Failed to save data', e);
+  }
+};
+
+const DEFAULT_HABITS: Habit[] = [
+  {
+    id: Date.now().toString() + Math.random().toString(16).slice(2),
+    title: 'Пить воду',
+    duration: 21,
+    startTime: '07:00',
+    endTime: '08:00',
+    progress: 7,
+    goal: 'Пить 2 литра воды каждый день',
+    icon: '💧',
+    lastCompletedDate: undefined,
+  },
+  {
+    id: Date.now().toString() + Math.random().toString(16).slice(2),
+    title: 'Читать книгу',
+    duration: 30,
+    startTime: '20:00',
+    endTime: '21:00',
+    progress: 15,
+    goal: 'Прочитать 10 страниц каждый день',
+    icon: '📚',
+    lastCompletedDate: undefined,
+  },
+];
+
+
 const getTodayDateString = (): string => {
 	const today = new Date();
 	const year = today.getFullYear();
@@ -28,12 +75,13 @@ const generateUniqueId = (): string => {
 	return Date.now().toString() + Math.random().toString(16).slice(2);
 };
 
-const initializeAssistant = (getState: () => AssistantAppState) => {
+const initializeAssistant = (getState: () => AssistantAppState, getRecoveryState: () => unknown) => {
 	if (isDev) {
 		return createSmartappDebugger({
 			token: import.meta.env.VITE_SMARTAPP_TOKEN ?? '',
 			initPhrase: 'запусти Трекер Привычек',
 			getState,
+			getRecoveryState,
 			nativePanel: {
 				defaultText: 'Поговори со мной братишка',
 				screenshotMode: false,
@@ -41,35 +89,15 @@ const initializeAssistant = (getState: () => AssistantAppState) => {
 			},
 		});
 	}
-	return createAssistant({ getState });
+	return createAssistant({ getState, getRecoveryState });
 };
 
 const App = () => {
 	const assistantRef = useRef<ReturnType<typeof createAssistant>>();
-	const [habits, setHabits] = useState<Habit[]>([
-		{
-			id: generateUniqueId(),
-			title: 'Пить воду',
-			duration: 21,
-			startTime: '07:00',
-			endTime: '08:00',
-			progress: 7,
-			goal: 'Пить 2 литра воды каждый день',
-			icon: '💧',
-			lastCompletedDate: undefined,
-		},
-		{
-			id: generateUniqueId(),
-			title: 'Читать книгу',
-			duration: 30,
-			startTime: '20:00',
-			endTime: '21:00',
-			progress: 15,
-			goal: 'Прочитать 10 страниц каждый день',
-			icon: '📚',
-			lastCompletedDate: undefined,
-		},
-	]);
+	const [habits, setHabits] = useState<Habit[]>(() => {
+  const savedData = loadFromStorage();
+    return savedData?.habits || DEFAULT_HABITS;
+  });
 
 	const [completedHabits, setCompletedHabits] = useState<Habit[]>(
 		// Фильтруем начальный список, чтобы разделить активные и выполненные
@@ -80,12 +108,24 @@ const App = () => {
 		habits.filter((habit) => habit.progress < habit.duration),
 	);
 
+
+
 	// Состояние для управления видимостью модального окна
 	const [showAddHabitModal, setShowAddHabitModal] = useState(false);
 	// Новое состояние для хранения названия привычки от ассистента
 	const [initialHabitTitle, setInitialHabitTitle] = useState<string | undefined>(
 		undefined,
 	);
+
+
+
+useEffect(() => {
+    saveToStorage(habits);
+  }, [habits]);
+
+	const getRecoveryState = useCallback(() => {
+    return { habits };
+  }, [habits]);
 
 	const [showDeleteConfirmationModal, setShowDeleteConfirmationModal] = useState(false);
 	const [habitToDeleteId, setHabitToDeleteId] = useState<string | null>(null);
@@ -145,7 +185,7 @@ const App = () => {
 
 	// Обработчик добавления привычки, который также закрывает модальное окно
 	const handleAddHabit = (
-		newHabitData: Omit<Habit, 'id' | 'completedToday' | 'lastCompletedDate'>,
+		newHabitData: Omit<Habit, 'id' | 'lastCompletedDate'>,
 	) => {
 		// Создаем полный объект Habit с уникальным ID
 		const habitWithId: Habit = {
@@ -154,7 +194,7 @@ const App = () => {
 			lastCompletedDate: undefined,
 		};
 
-		setActiveHabits((prev) => [...prev, habitWithId]);
+		setHabits((prev) => [...prev, habitWithId]);
 		handleCloseModal();
 	};
 
@@ -255,7 +295,7 @@ const App = () => {
 					ignored_words: ['удалить', 'удали', 'номер', 'привычку'],
 				},
 			};
-		});
+		}, getRecoveryState);
 		assistantRef.current = assistant;
 		/* eslint-disable  @typescript-eslint/no-explicit-any */
 		assistant.on('data', (event: any) => {
@@ -338,7 +378,12 @@ const App = () => {
 		// Однако, если getStateForAssistant использует habits, то habits должен остаться в зависимостях.
 		// Допустим, что getStateForAssistant может использовать habits для item_selector,
 		// поэтому оставляем habits в зависимостях.
-	}, [activeHabits, handleDeleteHabit]); // Оставляем habits в зависимостях, если getStateForAssistant его использует
+	}, [activeHabits, handleDeleteHabit, getRecoveryState]); // Оставляем habits в зависимостях, если getStateForAssistant его использует
+
+useEffect(() => {
+    setActiveHabits(habits.filter(habit => habit.progress < habit.duration));
+    setCompletedHabits(habits.filter(habit => habit.progress >= habit.duration));
+  }, [habits]);
 
 	return (
 		<Router>
