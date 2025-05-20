@@ -11,6 +11,7 @@ $sber-green-primary: #4BB34B;
 $sber-green-light: #8BC34A;
 $status-done-green: #66BB6A; // Можно использовать этот цвет для активной кнопки
 $status-missed-red: #f44336; // Можно использовать этот цвет для неактивной кнопки
+$status-missed-red-more: #b03027;
 $delete-button-grey: #B0B0B0;
 $delete-button-red-hover: #E57373;
 
@@ -22,9 +23,7 @@ $breakpoint-mobile: 480px;
 .card {
   background-color: $sber-white;
   padding: 15px;
-   @media (max-width: $breakpoint-mobile) {
-        padding: 10px;
-    }
+
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   width: 100%;
@@ -32,6 +31,9 @@ $breakpoint-mobile: 480px;
   flex-direction: column;
   position: relative;
   margin-bottom: 15px; // Отступ между карточками
+	@media (max-width: $breakpoint-mobile) {
+        padding: 10px;
+    }
 }
 
 .header {
@@ -130,7 +132,7 @@ $breakpoint-mobile: 480px;
   color: $sber-white;
 
   &:hover:not(:disabled) {
-      background-color: darken($status-missed-red, 10%); // Темнее при наведении
+      background-color: $status-missed-red-more; // Темнее при наведении
   }
   &:active:not(:disabled) {
       opacity: 0.8; // Прозрачность при клике
