@@ -1,14 +1,12 @@
-
-
 /* ./styles/App.scss - Адаптивная версия */
 
 // Основные цвета Сбера (примерные)
-$sber-green-dark: #388E3C;
-$sber-green-primary: #4BB34B;
-$sber-green-light: #8BC34A;
-$sber-blue-green: #A8E6CF;
-$sber-white: #FFFFFF;
-$sber-light-grey: #EEEEEE;
+$sber-green-dark: #388e3c;
+$sber-green-primary: #4bb34b;
+$sber-green-light: #8bc34a;
+$sber-blue-green: #a8e6cf;
+$sber-white: #ffffff;
+$sber-light-grey: #eeeeee;
 $sber-dark-grey: #333333;
 $sber-green-primary-more: #378737;
 
@@ -21,166 +19,165 @@ $breakpoint-xz: 639px;
 $break-point-omg: 1921px;
 
 #root {
-	  background: linear-gradient(to bottom right, $sber-blue-green, $sber-green-primary);
+	background: linear-gradient(to bottom right, $sber-blue-green, $sber-green-primary);
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+	margin: 0;
+	padding: 0;
+	font-family:
+		-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+		'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 
 	color: $sber-dark-grey;
 
-  // Адаптация базового размера шрифта для меньших экранов (используем rem)
-  font-size: 16px; // Базовый размер для rem
-  @media (max-width: $breakpoint-tablet) {
-      font-size: 15px;
-  }
-  @media (max-width: $breakpoint-mobile) {
-      font-size: 14px;
-  }
+	// Адаптация базового размера шрифта для меньших экранов (используем rem)
+	font-size: 16px; // Базовый размер для rem
+	@media (max-width: $breakpoint-tablet) {
+		font-size: 15px;
+	}
+	@media (max-width: $breakpoint-mobile) {
+		font-size: 14px;
+	}
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
 .app-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
 }
 
 .navbar {
-  background-color: $sber-green-dark;
-  color: $sber-white;
-  padding: 10px 20px; // Используем px, но можно адаптировать в медиазапросах
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  flex-wrap: wrap; // Позволяет элементам навбара переноситься на новую строку на узких экранах
+	background-color: $sber-green-dark;
+	color: $sber-white;
+	padding: 10px 20px; // Используем px, но можно адаптировать в медиазапросах
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+	flex-wrap: wrap; // Позволяет элементам навбара переноситься на новую строку на узких экранах
 }
 
 .navbar-title {
-  margin: 0;
-  font-size: 1.5em; // em масштабируется относительно родителя (navbar) или базового размера body
-  font-weight: bold;
+	margin: 0;
+	font-size: 1.5em; // em масштабируется относительно родителя (navbar) или базового размера body
+	font-weight: bold;
 
-  @media (max-width: $breakpoint-mobile) {
-      font-size: 1.3em; // Уменьшаем размер на мобильных
-      width: 100%; // Занимает всю ширину на узких экранах
-      text-align: center;
-      margin-bottom: 10px; // Отступ от заголовка до ссылок на мобильных
-  }
+	@media (max-width: $breakpoint-mobile) {
+		font-size: 1.3em; // Уменьшаем размер на мобильных
+		width: 100%; // Занимает всю ширину на узких экранах
+		text-align: center;
+		margin-bottom: 10px; // Отступ от заголовка до ссылок на мобильных
+	}
 }
 
 .navbar-links {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  flex-wrap: wrap; // Позволяет ссылкам переноситься
-  justify-content: center; // Центрируем ссылки, если они перенеслись
+	display: flex;
+	gap: 20px;
+	align-items: center;
+	flex-wrap: wrap; // Позволяет ссылкам переноситься
+	justify-content: center; // Центрируем ссылки, если они перенеслись
 
-  @media (max-width: $breakpoint-mobile) {
-      width: 100%; // Занимает всю ширину на мобильных
-      gap: 10px; // Уменьшаем расстояние между ссылками
-  }
+	@media (max-width: $breakpoint-mobile) {
+		width: 100%; // Занимает всю ширину на мобильных
+		gap: 10px; // Уменьшаем расстояние между ссылками
+	}
 }
 
 .nav-link {
-  color: $sber-white;
-  text-decoration: none;
-  font-size: 1.1em; // em масштабируется относительно родителя (.navbar-links) или базового размера body
-  transition: color 0.3s ease;
+	color: $sber-white;
+	text-decoration: none;
+	font-size: 1.1em; // em масштабируется относительно родителя (.navbar-links) или базового размера body
+	transition: color 0.3s ease;
 
-  &:hover {
-    color: $sber-light-grey;
-  }
+	&:hover {
+		color: $sber-light-grey;
+	}
 
-  &.nav-link {
-      background: none;
-      border: none;
-      padding: 0;
-      font: inherit;
-      cursor: pointer;
-      outline: inherit;
-  }
+	&.nav-link {
+		background: none;
+		border: none;
+		padding: 0;
+		font: inherit;
+		cursor: pointer;
+		outline: inherit;
+	}
 }
 
-
 .main-content {
-
-  flex-grow: 1;
-  padding: 20px;
-	padding-bottom: 135px;// Базовый отступ, можно адаптировать
-  display: flex;
-  flex-direction: column;
-	@media (max-width: $breakpoint-bxz){
+	flex-grow: 1;
+	padding: 20px;
+	padding-bottom: 135px; // Базовый отступ, можно адаптировать
+	display: flex;
+	flex-direction: column;
+	@media (max-width: $breakpoint-bxz) {
 		padding: 15px;
 		padding-bottom: 100px;
 	}
 
-	@media (max-height: $breakpoint-vxz){
-			padding: 10px;
-			padding-bottom: 220px;
+	@media (max-height: $breakpoint-vxz) {
+		padding: 10px;
+		padding-bottom: 220px;
 	}
 
-  @media (max-width: $breakpoint-tablet) {
-      padding: 15px;
-			padding-bottom: 100px;
-  }
+	@media (max-width: $breakpoint-tablet) {
+		padding: 15px;
+		padding-bottom: 100px;
+	}
 	@media (max-width: $breakpoint-mobile) {
-    padding: 10px;
+		padding: 10px;
 		padding-bottom: 110px;
 	}
-	@media (max-width: $breakpoint-xz){
-			padding: 10px;
-			padding-bottom: 110px;
+	@media (max-width: $breakpoint-xz) {
+		padding: 10px;
+		padding-bottom: 110px;
 	}
-	@media (max-height: $break-point-omg){
-			padding-bottom: 220px;
+	@media (max-height: $break-point-omg) {
+		padding-bottom: 220px;
 	}
-  > button { /* Стиль для кнопки "Добавить привычку" */
-      margin-bottom: 20px;
-      background-color: $sber-green-primary;
-      color: $sber-white;
-      padding: 10px 20px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      font-size: 1em;
-      transition: background-color 0.3s ease, opacity 0.3s ease;
+	> button {
+		/* Стиль для кнопки "Добавить привычку" */
+		margin-bottom: 20px;
+		background-color: $sber-green-primary;
+		color: $sber-white;
+		padding: 10px 20px;
+		border-radius: 8px;
+		border: none;
+		cursor: pointer;
+		font-size: 1em;
+		transition:
+			background-color 0.3s ease,
+			opacity 0.3s ease;
 
-      @media (max-width: $breakpoint-mobile) {
-         width: 100%; // Кнопка на всю ширину на мобильных
-         padding: 12px 20px; // Немного увеличиваем padding
-      }
+		@media (max-width: $breakpoint-mobile) {
+			width: 100%; // Кнопка на всю ширину на мобильных
+			padding: 12px 20px; // Немного увеличиваем padding
+		}
 
-      &:hover {
-          background-color: $sber-green-primary-more;
-      }
-      &:active {
-          opacity: 0.8;
-      }
-  }
+		&:hover {
+			background-color: $sber-green-primary-more;
+		}
+		&:active {
+			opacity: 0.8;
+		}
+	}
 }
 
 .navbar-icon {
-  height: 1.5em; // Задайте желаемую высоту иконки (например, такую же, как высота текста)
-  width: auto; // Сохраняем пропорции
-  vertical-align: middle; // Может помочь с выравниванием, если не используете flex
-  // Дополнительные стили, если нужно, например, margin-right: 5px;
+	height: 1.5em; // Задайте желаемую высоту иконки (например, такую же, как высота текста)
+	width: auto; // Сохраняем пропорции
+	vertical-align: middle; // Может помочь с выравниванием, если не используете flex
+	// Дополнительные стили, если нужно, например, margin-right: 5px;
 }
 
 .navbar-title {
-  display: flex; // Делаем flex-контейнером для выравнивания иконки и текста
-  align-items: center; // Выравниваем элементы по центру по вертикали
-  gap: 10px; // Добавляем немного пространства между иконкой и текстом (по желанию)
+	display: flex; // Делаем flex-контейнером для выравнивания иконки и текста
+	align-items: center; // Выравниваем элементы по центру по вертикали
+	gap: 10px; // Добавляем немного пространства между иконкой и текстом (по желанию)
 }
-

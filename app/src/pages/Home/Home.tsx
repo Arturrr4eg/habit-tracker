@@ -1,39 +1,34 @@
 import HabitCard, { Habit } from '../../components/HabitCard';
 
-// Типизация пропсов для компонента Home
 type HomeProps = {
-  habits: Habit[];
+	habits: Habit[];
 	onDeleteHabit: (id: string) => void;
 	onCompleteToday: (id: string) => void;
 };
 
-const Home: React.FC<HomeProps> = ({ habits, onDeleteHabit, onCompleteToday }) => { // Получаем функцию onDeleteHabit из пропсов
-  console.log('Home: Rendering with habits:', habits);
+const Home: React.FC<HomeProps> = ({ habits, onDeleteHabit, onCompleteToday }) => {
+	console.log('Home: Rendering with habits:', habits);
 	return (
-    <div className="home-container"> {/* Обертка для всего контента Home */}
-      <h2>Мои привычки</h2> {/* Заголовок списка привычек */}
+		<div className="home-container">
+			<h2>Мои привычки</h2>
 
-      {habits.length === 0 ? (
-        // Сообщение, если привычек нет
-        <p>У вас пока нет привычек. Добавьте первую!</p>
-      ) : (
-        // Список привычек, если они есть
-        <div className="habits-list"> {/* Обертка для списка */}
-          {habits.map((habit) => (
-            // Обертка для номера, карточки и кнопки удаления
-            // Используем index как key, так как порядок важен и меняется при удалении
-            <div key={habit.id} className="habit-list-item-wrapper">
-              <HabitCard
-                 {...habit} // Передаем все поля habit, включая id
-                 onDeleteHabit={onDeleteHabit} // Передаем функцию удаления
-								 onCompleteToday={onCompleteToday}
-              />
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+			{habits.length === 0 ? (
+				<p>У вас пока нет привычек. Добавьте первую!</p>
+			) : (
+				<div className="habits-list">
+					{habits.map((habit) => (
+						<div key={habit.id} className="habit-list-item-wrapper">
+							<HabitCard
+								{...habit}
+								onDeleteHabit={onDeleteHabit}
+								onCompleteToday={onCompleteToday}
+							/>
+						</div>
+					))}
+				</div>
+			)}
+		</div>
+	);
 };
 
 export default Home;

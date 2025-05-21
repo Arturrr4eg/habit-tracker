@@ -1,15 +1,15 @@
 .modalOverlay {
-	position: fixed; // Фиксированное позиционирование, чтобы перекрывать все
+	position: fixed;
 	top: 0;
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background-color: rgba(0, 0, 0, 0.6); // Полупрозрачный черный фон
+	background-color: rgba(0, 0, 0, 0.6);
 	display: flex;
-	justify-content: center; // Центрирование по горизонтали
-	align-items: center; // Центрирование по вертикали
-	z-index: 1000; // Убедимся, что модальное окно поверх всего остального
-	padding: 20px; // Добавим отступ для маленьких экранов
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+	padding: 20px;
 }
 
 .modalContent {
@@ -17,11 +17,11 @@
 	padding: 20px;
 	border-radius: 16px;
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-	position: relative; // Для позиционирования кнопки закрытия
-	max-width: 500px; // Ограничиваем максимальную ширину
-	width: 100%; // Занимаем всю доступную ширину до max-width
-	max-height: 90vh; // Ограничиваем максимальную высоту
-	overflow-y: auto; // Добавляем прокрутку, если содержимое не помещается
+	position: relative;
+	max-width: 500px;
+	width: 100%;
+	max-height: 90vh;
+	overflow-y: auto;
 }
 
 .closeButton {
