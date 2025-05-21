@@ -181,3 +181,23 @@ code {
 	align-items: center; // Выравниваем элементы по центру по вертикали
 	gap: 10px; // Добавляем немного пространства между иконкой и текстом (по желанию)
 }
+
+.error-message {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px;
+  background: #ffebee;
+  border: 1px solid #f44336;
+  border-radius: 4px;
+  color: #d32f2f;
+  z-index: 1000;
+
+  button {
+    margin-left: 10px;
+    background: none;
+    border: none;
+    color: #d32f2f;
+    cursor: pointer;
+  }
+}

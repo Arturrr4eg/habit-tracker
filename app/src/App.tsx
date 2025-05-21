@@ -14,6 +14,7 @@ import AddHabitForm from './pages/AddHabit/AddHabitForm';
 import DeleteConfirmation from './components/DeleteConfirmation/DeleteConfirmation';
 import CompletionModal from './components/CompletionModal/CompletionModal';
 import myCustomIcon from '/iconxd.png';
+import { loadHabits, saveHabits } from './db/indexedDB';
 
 const DEFAULT_HABITS: Habit[] = [
 	{
@@ -74,45 +75,44 @@ const initializeAssistant = (
 	return createAssistant({ getState, getRecoveryState });
 };
 
-const STORAGE_KEY = 'habitTrackerData';
-
-const loadFromStorage = (): { habits: Habit[] } => {
-	try {
-		const data = localStorage.getItem(STORAGE_KEY);
-		if (data) {
-			const parsed = JSON.parse(data);
-			const habits = parsed.habits.map((habit: Habit) => ({
-				...habit,
-				lastCompletedDate: habit.lastCompletedDate ? habit.lastCompletedDate : undefined,
-			}));
-			return { habits };
-		}
-	} catch (e) {
-		console.error('Failed to load data', e);
-	}
-	return { habits: DEFAULT_HABITS };
-};
-
-const saveToStorage = (allHabits: Habit[]) => {
-	try {
-		const data = {
-			habits: allHabits,
-			savedAt: new Date().toISOString(),
-		};
-		localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-	} catch (e) {
-		console.error('Failed to save data', e);
-	}
-};
-
 const App = () => {
 	const assistantRef = useRef<ReturnType<typeof createAssistant>>();
-	const [allHabits, setAllHabits] = useState<Habit[]>(() => {
-		const { habits } = loadFromStorage();
-		return habits;
-	});
+	const [allHabits, setAllHabits] = useState<Habit[]>(DEFAULT_HABITS);
+	const [dbError, setDbError] = useState<string | null>(null);
 
-	// Производные состояния
+	useEffect(() => {
+		const loadData = async () => {
+			try {
+				const loadedHabits = await loadHabits();
+				if (loadedHabits.length > 0) {
+					setAllHabits(loadedHabits);
+				} else {
+					await saveHabits(DEFAULT_HABITS);
+				}
+			} catch (error) {
+				console.error('Failed to load habits:', error);
+				setDbError('Не удалось загрузить привычки. Попробуйте обновить страницу.');
+			}
+		};
+
+		loadData();
+	}, []);
+
+	useEffect(() => {
+		if (allHabits === DEFAULT_HABITS) return; // Не сохраняем при инициализации
+
+		const saveData = async () => {
+			try {
+				await saveHabits(allHabits);
+			} catch (error) {
+				console.error('Failed to save habits:', error);
+				setDbError('Не удалось сохранить привычки. Данные могут быть потеряны.');
+			}
+		};
+
+		saveData();
+	}, [allHabits]);
+
 	const activeHabits = useMemo(
 		() => allHabits.filter((habit) => habit.progress < habit.duration),
 		[allHabits],
@@ -123,13 +123,8 @@ const App = () => {
 		[allHabits],
 	);
 
-	useEffect(() => {
-		saveToStorage(allHabits);
-	}, [allHabits]);
-
-	// Состояние для управления видимостью модального окна
 	const [showAddHabitModal, setShowAddHabitModal] = useState(false);
-	// Новое состояние для хранения названия привычки от ассистента
+
 	const [initialHabitTitle, setInitialHabitTitle] = useState<string | undefined>(
 		undefined,
 	);
@@ -182,7 +177,9 @@ const App = () => {
 		setInitialHabitTitle(undefined);
 	};
 
-	const handleAddHabit = (newHabitData: Omit<Habit, 'id' | 'lastCompletedDate'>) => {
+	const handleAddHabit = async (
+		newHabitData: Omit<Habit, 'id' | 'lastCompletedDate'>,
+	) => {
 		const habitWithId: Habit = {
 			...newHabitData,
 			id: generateUniqueId(),
@@ -292,8 +289,8 @@ const App = () => {
 					) {
 						const habitIdToComplete = event.action.id;
 						// console.log(
-							//'Received complete_habit_voice action for ID:',
-							//habitIdToComplete,
+						//'Received complete_habit_voice action for ID:',
+						//habitIdToComplete,
 						//);
 						handleCompleteToday(habitIdToComplete);
 					} else {
@@ -373,6 +370,13 @@ const App = () => {
 								onConfirm={confirmCompletion}
 							/>
 						</Modal>
+					)}
+
+					{dbError && (
+						<div className="error-message">
+							{dbError}
+							<button onClick={() => setDbError(null)}>Закрыть</button>
+						</div>
 					)}
 				</main>
 			</div>
