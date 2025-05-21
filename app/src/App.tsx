@@ -146,7 +146,7 @@ const App = () => {
 
 	const handleDeleteHabit = useCallback(
 		(id: string) => {
-			console.log('Requesting deletion confirmation for habit with ID:', id);
+			//console.log('Requesting deletion confirmation for habit with ID:', id);
 			const habit = activeHabits.find((h) => h.id === id);
 			if (habit) {
 				setHabitToDeleteId(id);
@@ -161,7 +161,7 @@ const App = () => {
 
 	const confirmDeleteHabit = (idToDelete: string | null) => {
 		if (idToDelete) {
-			console.log('Confirming deletion for habit with ID:', idToDelete);
+			// console.log('Confirming deletion for habit with ID:', idToDelete);
 			setAllHabits((prev) => prev.filter((h) => h.id !== idToDelete));
 			setHabitToDeleteId(null);
 			setHabitToDeleteTitle(null);
@@ -170,7 +170,7 @@ const App = () => {
 	};
 
 	const cancelDeleteHabit = () => {
-		console.log('Deletion cancelled.');
+		// console.log('Deletion cancelled.');
 		setHabitToDeleteId(null);
 		setHabitToDeleteTitle(null);
 		setShowDeleteConfirmationModal(false);
@@ -194,7 +194,7 @@ const App = () => {
 	};
 
 	const handleCompleteToday = (idToComplete: string) => {
-		console.log('Attempting to mark habit as completed today for ID:', idToComplete);
+		// console.log('Attempting to mark habit as completed today for ID:', idToComplete);
 		const todayString = getTodayDateString();
 
 		setAllHabits((prevHabits) => {
@@ -214,7 +214,7 @@ const App = () => {
 				};
 
 				if (newProgress >= updatedHabit.duration) {
-					console.log(`Habit with ID ${updatedHabit.id} completed!`);
+					// console.log(`Habit with ID ${updatedHabit.id} completed!`);
 
 					setCompletedHabitDetails(updatedHabit);
 					setShowCompletionModal(true);
@@ -225,20 +225,20 @@ const App = () => {
 				);
 			}
 
-			console.log(`Habit with ID ${habitToUpdate.id} already completed.`);
+			// console.log(`Habit with ID ${habitToUpdate.id} already completed.`);
 			return prevHabits;
 		});
 	};
 
 	const confirmCompletion = () => {
-		console.log('Completion modal confirmed (habit already moved).');
+		// console.log('Completion modal confirmed (habit already moved).');
 
 		setCompletedHabitDetails(null);
 		setShowCompletionModal(false);
 	};
 
 	const cancelCompletionModal = () => {
-		console.log('Completion modal closed (habit already moved).');
+		// console.log('Completion modal closed (habit already moved).');
 
 		setCompletedHabitDetails(null);
 		setShowCompletionModal(false);
@@ -260,14 +260,14 @@ const App = () => {
 		assistantRef.current = assistant;
 		/* eslint-disable  @typescript-eslint/no-explicit-any */
 		assistant.on('data', (event: any) => {
-			console.log('assistant.on(data)', event);
+			// console.log('assistant.on(data)', event);
 
 			if (event.action) {
-				console.log('Assistant action received:', event.action);
+				// console.log('Assistant action received:', event.action);
 
 				if (event.action.type === 'add_habit' && typeof event.action.title === 'string') {
 					const habitTitleFromAssistant = event.action.title;
-					console.log('Название привычки от ассистента:', habitTitleFromAssistant);
+					// console.log('Название привычки от ассистента:', habitTitleFromAssistant);
 
 					setInitialHabitTitle(habitTitleFromAssistant);
 
@@ -275,9 +275,9 @@ const App = () => {
 				} else if (event.action.type === 'delete_habit') {
 					if (typeof event.action.id === 'string' && event.action.id) {
 						const habitIdToDelete = event.action.id;
-						console.log('Received delete_habit action for ID:', habitIdToDelete);
+						// console.log('Received delete_habit action for ID:', habitIdToDelete);
 						handleDeleteHabit(habitIdToDelete);
-						console.log(`Requested deletion for habit with ID: ${habitIdToDelete}`);
+						// console.log(`Requested deletion for habit with ID: ${habitIdToDelete}`);
 					} else {
 						console.warn(
 							'Received delete_habit action without a valid ID:',
@@ -291,10 +291,10 @@ const App = () => {
 						event.action.id
 					) {
 						const habitIdToComplete = event.action.id;
-						console.log(
-							'Received complete_habit_voice action for ID:',
-							habitIdToComplete,
-						);
+						// console.log(
+							//'Received complete_habit_voice action for ID:',
+							//habitIdToComplete,
+						//);
 						handleCompleteToday(habitIdToComplete);
 					} else {
 						console.warn(

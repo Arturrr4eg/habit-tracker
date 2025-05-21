@@ -7,7 +7,7 @@ type HomeProps = {
 };
 
 const Home: React.FC<HomeProps> = ({ habits, onDeleteHabit, onCompleteToday }) => {
-	console.log('Home: Rendering with habits:', habits);
+	// console.log('Home: Rendering with habits:', habits);
 	return (
 		<div className="home-container">
 			<h2>Мои привычки</h2>
