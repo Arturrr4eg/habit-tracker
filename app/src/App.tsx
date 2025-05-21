@@ -13,42 +13,9 @@ import Modal from './components/Modal/Modal';
 import AddHabitForm from './pages/AddHabit/AddHabitForm';
 import DeleteConfirmation from './components/DeleteConfirmation/DeleteConfirmation';
 import CompletionModal from './components/CompletionModal/CompletionModal';
+import myCustomIcon from "/iconxd.png"
 
 
-const STORAGE_KEY = 'habitTrackerData';
-
-const loadFromStorage = (): { habits: Habit[] } => {
-  try {
-    const data = localStorage.getItem(STORAGE_KEY);
-    if (data) {
-      const parsed = JSON.parse(data);
-      // Восстанавливаем даты из строк
-      const habits = parsed.habits.map((habit: Habit) => ({
-        ...habit,
-        lastCompletedDate: habit.lastCompletedDate
-          ? habit.lastCompletedDate
-          : undefined
-      }));
-      return { habits };
-    }
-  } catch (e) {
-    console.error('Failed to load data', e);
-  }
-  return { habits: DEFAULT_HABITS };
-};
-
-const saveToStorage = (allHabits: Habit[]) => {
-  try {
-    const data = {
-      habits: allHabits,
-      // Добавляем дату последнего сохранения
-      savedAt: new Date().toISOString()
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch (e) {
-    console.error('Failed to save data', e);
-  }
-};
 
 const DEFAULT_HABITS: Habit[] = [
   {
@@ -93,12 +60,12 @@ const generateUniqueId = (): string => {
 const initializeAssistant = (getState: () => AssistantAppState, getRecoveryState: () => unknown) => {
 	if (isDev) {
 		return createSmartappDebugger({
-			token: import.meta.env.VITE_SMARTAPP_TOKEN ?? '',
-			initPhrase: 'запусти Трекер Привычек',
+			token: import.meta.env.VITE_SMARTAPP_TOKEN!,
+			initPhrase: `Запусти ${import.meta.env.VITE_APP_SMARTAPP}`,
 			getState,
 			getRecoveryState,
 			nativePanel: {
-				defaultText: 'Поговори со мной братишка',
+				defaultText: 'Запусти меня!',
 				screenshotMode: false,
 				tabIndex: -1,
 			},
@@ -106,6 +73,44 @@ const initializeAssistant = (getState: () => AssistantAppState, getRecoveryState
 	}
 	return createAssistant({ getState, getRecoveryState });
 };
+
+
+const STORAGE_KEY = 'habitTrackerData';
+
+const loadFromStorage = (): { habits: Habit[] } => {
+  try {
+    const data = localStorage.getItem(STORAGE_KEY);
+    if (data) {
+      const parsed = JSON.parse(data);
+      // Восстанавливаем даты из строк
+      const habits = parsed.habits.map((habit: Habit) => ({
+        ...habit,
+        lastCompletedDate: habit.lastCompletedDate
+          ? habit.lastCompletedDate
+          : undefined
+      }));
+      return { habits };
+    }
+  } catch (e) {
+    console.error('Failed to load data', e);
+  }
+  return { habits: DEFAULT_HABITS };
+};
+
+const saveToStorage = (allHabits: Habit[]) => {
+  try {
+    const data = {
+      habits: allHabits,
+      // Добавляем дату последнего сохранения
+      savedAt: new Date().toISOString()
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch (e) {
+    console.error('Failed to save data', e);
+  }
+};
+
+
 
 const App = () => {
 	const assistantRef = useRef<ReturnType<typeof createAssistant>>();
@@ -364,6 +369,7 @@ const App = () => {
 
 		return () => {
 			// Функция очистки при размонтировании
+
 		};
 		// Зависимости: теперь не нужно добавлять habits, так как мы не обращаемся к массиву habits
 		// внутри обработчика delete_habit для поиска по индексу.
@@ -376,7 +382,10 @@ const App = () => {
 		<Router>
 			<div className="app-container">
 				<nav className="navbar">
-					<h1 className="navbar-title">🧠 Трекер Привычек</h1>
+					<h1 className="navbar-title">
+						<img src={myCustomIcon} alt="Моя иконка" className="navbar-icon" /> {/* Добавьте класс для стилизации */}
+						Трекер Привычек
+					</h1>
 					<div className="navbar-links">
 						<Link to="/" className="nav-link">
 							Главная
@@ -390,9 +399,9 @@ const App = () => {
 
 				<main className="main-content">
 					<button
-						className="nav-link"
+
 						onClick={handleOpenModal}
-						style={{ cursor: 'pointer' }}
+						style={{ cursor: 'pointer'}}
 					>
 						Добавить привычку
 					</button>

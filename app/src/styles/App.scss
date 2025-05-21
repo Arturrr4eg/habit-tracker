@@ -14,9 +14,11 @@ $sber-green-primary-more: #378737;
 
 // Определение контрольных точек (брейкпоинтов) для медиазапросов (примерные)
 $breakpoint-bxz: 960px;
+$breakpoint-vxz: 801px;
 $breakpoint-tablet: 768px;
 $breakpoint-mobile: 480px;
 $breakpoint-xz: 639px;
+$break-point-omg: 1921px;
 
 #root {
 	  background: linear-gradient(to bottom right, $sber-blue-green, $sber-green-primary);
@@ -123,19 +125,27 @@ code {
 		padding: 15px;
 		padding-bottom: 100px;
 	}
+
+	@media (max-height: $breakpoint-vxz){
+			padding: 10px;
+			padding-bottom: 220px;
+	}
+
   @media (max-width: $breakpoint-tablet) {
       padding: 15px;
 			padding-bottom: 100px;
   }
+	@media (max-width: $breakpoint-mobile) {
+    padding: 10px;
+		padding-bottom: 110px;
+	}
 	@media (max-width: $breakpoint-xz){
 			padding: 10px;
 			padding-bottom: 110px;
-    @media (max-width: $breakpoint-mobile) {
-      padding: 10px;
-			padding-bottom: 110px;
-
-		}
-  }
+	}
+	@media (max-height: $break-point-omg){
+			padding-bottom: 220px;
+	}
   > button { /* Стиль для кнопки "Добавить привычку" */
       margin-bottom: 20px;
       background-color: $sber-green-primary;
@@ -160,3 +170,17 @@ code {
       }
   }
 }
+
+.navbar-icon {
+  height: 1.5em; // Задайте желаемую высоту иконки (например, такую же, как высота текста)
+  width: auto; // Сохраняем пропорции
+  vertical-align: middle; // Может помочь с выравниванием, если не используете flex
+  // Дополнительные стили, если нужно, например, margin-right: 5px;
+}
+
+.navbar-title {
+  display: flex; // Делаем flex-контейнером для выравнивания иконки и текста
+  align-items: center; // Выравниваем элементы по центру по вертикали
+  gap: 10px; // Добавляем немного пространства между иконкой и текстом (по желанию)
+}
+

@@ -4,7 +4,7 @@
 // @use '../styles/App.scss' as app; // Если используете @use
 
 // Или определите цвета заново
-$sber-white: #FFFFFF;
+$sber-white: #ffffff;
 $sber-dark-grey: #333333;
 $sber-light-grey: #EEEEEE;
 $sber-green-primary: #4BB34B;
@@ -21,7 +21,7 @@ $breakpoint-mobile: 480px;
 
 
 .card {
-  background-color: $sber-white;
+  background: linear-gradient(to bottom right, #C8E6C9, #A8D8A8);
   padding: 15px;
 
   border-radius: 8px;
