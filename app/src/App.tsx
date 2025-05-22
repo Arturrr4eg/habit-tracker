@@ -312,7 +312,7 @@ const App = () => {
 				<nav className="navbar">
 					<h1 className="navbar-title">
 						<img src={myCustomIcon} alt="Моя иконка" className="navbar-icon" />
-						Трекер Привычек
+						Мои Привычки
 					</h1>
 					<div className="navbar-links">
 						<Link to="/" className="nav-link">
