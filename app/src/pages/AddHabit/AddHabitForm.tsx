@@ -17,6 +17,19 @@ const AddHabitForm: React.FC<AddHabitFormProps> = ({ onAdd, initialTitle }) => {
 	const [endTime, setEndTime] = useState('20:00');
 	const [icon, setIcon] = useState('🔥');
 
+
+	const setVH = () => {
+	const vh = window.innerHeight * 0.01;
+	document.documentElement.style.setProperty("--vh", `${vh}px`);
+};
+
+useEffect(() => {
+	setVH();
+	window.addEventListener("resize", setVH);
+
+	return () => window.removeEventListener("resize", setVH);
+}, []);
+
 	useEffect(() => {
 		setTitle(initialTitle || '');
 		if (!initialTitle) {
